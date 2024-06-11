@@ -23,11 +23,11 @@ func PostBondHandler(creator ports.BondCreator) response.HttpHandlerFunc {
 
 		bond, err := bondRequest.toBusiness()
 		if err != nil {
-			return err
+			return
 		}
 
-		if err := creator.Create(ctx, bond); err != nil {
-			return err
+		if err = creator.Create(ctx, bond); err != nil {
+			return
 		}
 
 		return response.JSON(w, http.StatusCreated, nil)
