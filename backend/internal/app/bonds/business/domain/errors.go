@@ -20,6 +20,7 @@ const (
 	InvalidBondName
 	InvalidBondQuantitySale
 	InvalidBondSalesPrice
+	DuplicateBond
 )
 
 // BondError represents an error type for bond-related errors

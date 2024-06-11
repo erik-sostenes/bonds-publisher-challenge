@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/business/logic"
+	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/infrastructure/driven/memory"
 	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/server/response"
 )
 
@@ -29,7 +31,10 @@ func Test_PostBondHandler(t *testing.T) {
 				}`,
 			)),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
-				return PostBondHandler(), nil
+				memo := memory.NewBondMemory()
+				bondCtr := logic.NewBondCreator(&memo)
+
+				return PostBondHandler(bondCtr), nil
 			},
 			expectedStatusCode: http.StatusCreated,
 		},
@@ -45,7 +50,10 @@ func Test_PostBondHandler(t *testing.T) {
 				}`,
 			)),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
-				return PostBondHandler(), nil
+				memo := memory.NewBondMemory()
+				bondCtr := logic.NewBondCreator(&memo)
+
+				return PostBondHandler(bondCtr), nil
 			},
 			expectedStatusCode: http.StatusUnprocessableEntity,
 		},

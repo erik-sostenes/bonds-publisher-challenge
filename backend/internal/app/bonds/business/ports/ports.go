@@ -8,7 +8,7 @@ import (
 
 type (
 	// right ports
-	CategorySaver interface {
+	BondSaver interface {
 		Save(context.Context, *domain.Bond) error
 	}
 )
