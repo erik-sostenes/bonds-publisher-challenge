@@ -15,7 +15,7 @@ type (
 const InvalidUserID = domain.InvalidUserID
 
 const (
-	// errors represents an error related to bond validation or business rules violation
+	// errors represents an error related to bond validation of the filter business rules
 	InvalidBondID BondError = iota + 1
 	InvalidBondName
 	InvalidBondQuantitySale

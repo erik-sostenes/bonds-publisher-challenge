@@ -8,9 +8,22 @@ import (
 )
 
 // BondHandler configures bond end-points
-func BondHandler(bondCtr ports.BondCreator, mux *http.ServeMux) {
+func BondHandler(
+	creator ports.BondCreator,
+	buyer ports.BondBuyer,
+	retriever ports.UserBondsRetriever,
+	mux *http.ServeMux,
+) {
 	mux.HandleFunc(
 		"POST /api/v1/bonds/create",
-		md.Recovery(md.Logger(md.CORS(BondErrorHandler(PostBondHandler(bondCtr))))),
+		md.Recovery(md.Logger(md.CORS(BondErrorHandler(PostBondHandler(creator))))),
+	)
+	mux.HandleFunc(
+		"PUT /api/v1/bonds/buy/{bond_id}/{buyer_user_id}",
+		md.Recovery(md.Logger(md.CORS(BondErrorHandler(PutBondBuyerHandler(buyer))))),
+	)
+	mux.HandleFunc(
+		"GET /api/v1/bonds/user",
+		md.Recovery(md.Logger(md.CORS(BondErrorHandler(GetBondsPerUserHandler(retriever))))),
 	)
 }

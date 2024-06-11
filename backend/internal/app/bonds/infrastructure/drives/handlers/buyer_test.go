@@ -52,7 +52,7 @@ func Test_PutBondBuyerHandler(t *testing.T) {
 				// save in memory a new Bond
 				_ = memo.Save(context.Background(), bond)
 
-				return PutBondBuyerHandler(logic.NewBuyerBond(&memo)), nil
+				return PutBondBuyerHandler(logic.NewBondBuyer(&memo)), nil
 			},
 			expectedStatusCode: http.StatusOK,
 		},
@@ -67,7 +67,7 @@ func Test_PutBondBuyerHandler(t *testing.T) {
 			},
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				return PutBondBuyerHandler(logic.NewBuyerBond(&memo)), nil
+				return PutBondBuyerHandler(logic.NewBondBuyer(&memo)), nil
 			},
 			expectedStatusCode: http.StatusBadRequest,
 		},
@@ -82,7 +82,7 @@ func Test_PutBondBuyerHandler(t *testing.T) {
 			},
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				return PutBondBuyerHandler(logic.NewBuyerBond(&memo)), nil
+				return PutBondBuyerHandler(logic.NewBondBuyer(&memo)), nil
 			},
 			expectedStatusCode: http.StatusBadRequest,
 		},
@@ -98,7 +98,7 @@ func Test_PutBondBuyerHandler(t *testing.T) {
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
 
-				return PutBondBuyerHandler(logic.NewBuyerBond(&memo)), nil
+				return PutBondBuyerHandler(logic.NewBondBuyer(&memo)), nil
 			},
 			expectedStatusCode: http.StatusNotFound,
 		},

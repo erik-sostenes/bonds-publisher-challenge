@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/business/domain"
+	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/filter"
 	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/server/response"
 )
 
@@ -33,7 +34,7 @@ func BondErrorHandler(apiFunc response.HttpHandlerFunc) http.HandlerFunc {
 					_ = response.JSON(w, http.StatusNotFound, message)
 					return
 				default:
-					_ = response.JSON(w, http.StatusBadRequest, message)
+					_ = response.JSON(w, http.StatusInternalServerError, message)
 					return
 				}
 			}
@@ -50,11 +51,27 @@ func BondErrorHandler(apiFunc response.HttpHandlerFunc) http.HandlerFunc {
 					_ = response.JSON(w, http.StatusBadRequest, message)
 					return
 				default:
-					_ = response.JSON(w, http.StatusBadRequest, message)
+					_ = response.JSON(w, http.StatusInternalServerError, message)
 					return
 				}
 			}
-			return
+
+			asFilter := filter.FilterError(0)
+			if errors.As(err, &asFilter) {
+				message := response.Response{
+					Code:    asBond.Error(),
+					Message: err.Error(),
+				}
+
+				switch asFilter {
+				case filter.InvalidFilterLimit, filter.InvalidFilterPage:
+					_ = response.JSON(w, http.StatusUnprocessableEntity, message)
+					return
+				default:
+					_ = response.JSON(w, http.StatusInternalServerError, message)
+					return
+				}
+			}
 		}
 	}
 }

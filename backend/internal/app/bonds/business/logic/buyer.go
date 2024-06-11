@@ -11,7 +11,7 @@ type buyerBond struct {
 	bondOwnerUpdater ports.BondOwnerUpdater
 }
 
-func NewBuyerBond(bondOwnerUpdater ports.BondOwnerUpdater) ports.BondBuyer {
+func NewBondBuyer(bondOwnerUpdater ports.BondOwnerUpdater) ports.BondBuyer {
 	if bondOwnerUpdater == nil {
 		panic("missing Bond Owner Updater dependency")
 	}

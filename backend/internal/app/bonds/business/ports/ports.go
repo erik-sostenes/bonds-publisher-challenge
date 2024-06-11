@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/business/domain"
+	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/filter"
 )
 
 type (
@@ -15,6 +16,10 @@ type (
 	BondOwnerUpdater interface {
 		Update(context.Context, *domain.BondID, *domain.BondCurrentOwnerId) error
 	}
+
+	UserBondsGetter interface {
+		Get(context.Context, *domain.BondCurrentOwnerId, *filter.Filter) (domain.Bonds, error)
+	}
 )
 
 type (
@@ -25,5 +30,9 @@ type (
 
 	BondBuyer interface {
 		Buy(context.Context, *domain.BondID, *domain.BondCurrentOwnerId) error
+	}
+
+	UserBondsRetriever interface {
+		Retrieve(context.Context, *domain.BondCurrentOwnerId, *filter.Filter) (domain.Bonds, error)
 	}
 )

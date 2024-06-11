@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/business/domain"
+	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/filter"
 	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/set"
 )
 
@@ -18,7 +19,7 @@ func NewBondMemory() bondMemory {
 	}
 }
 
-func (b *bondMemory) Save(ctx context.Context, bond *domain.Bond) error {
+func (b *bondMemory) Save(_ context.Context, bond *domain.Bond) error {
 	ok := b.set.Exist(bond.ID())
 	if ok {
 		return fmt.Errorf("%w = Bond with id '%s' already exists", domain.DuplicateBond, bond.ID())
@@ -29,7 +30,7 @@ func (b *bondMemory) Save(ctx context.Context, bond *domain.Bond) error {
 	return nil
 }
 
-func (b *bondMemory) Update(ctx context.Context, bID *domain.BondID, bcOwnerId *domain.BondCurrentOwnerId) error {
+func (b *bondMemory) Update(_ context.Context, bID *domain.BondID, bcOwnerId *domain.BondCurrentOwnerId) error {
 	ok := b.set.Exist(bID.ID())
 	if !ok {
 		return fmt.Errorf("%w = Bond with id '%s' was not found", domain.BondNotFound, bID.ID())
@@ -53,4 +54,8 @@ func (b *bondMemory) Update(ctx context.Context, bID *domain.BondID, bcOwnerId *
 	b.set.Add(newBond.ID(), newBond)
 
 	return nil
+}
+
+func (b *bondMemory) Get(_ context.Context, bcOwnerId *domain.BondCurrentOwnerId, fltr *filter.Filter) (domain.Bonds, error) {
+	return b.set.GetAll(), nil
 }

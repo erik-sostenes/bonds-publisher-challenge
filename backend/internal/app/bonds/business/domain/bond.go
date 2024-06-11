@@ -115,6 +115,9 @@ type (
 		bondCreatorUserId  BondCreatorUserID
 		bondCurrentOwnerId BondCurrentOwnerId
 	}
+
+	// Bonds is a Bond type collection
+	Bonds []*Bond
 )
 
 // NewBond creates a new Bond instance with the provided parameters
