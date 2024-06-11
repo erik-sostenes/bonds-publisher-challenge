@@ -138,7 +138,7 @@ func Test_PostBondHandler(t *testing.T) {
 				memo := memory.NewBondMemory()
 
 				// save in memory a new Bond
-				memo.Save(context.Background(), bond)
+				_ = memo.Save(context.Background(), bond)
 
 				return PostBondHandler(logic.NewBondCreator(&memo)), nil
 			},
