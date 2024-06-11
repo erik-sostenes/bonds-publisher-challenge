@@ -9,6 +9,9 @@ import (
 	"os/signal"
 	"strings"
 	"time"
+
+	"github.com/erik-sostenes/bonds-publisher-challenge/cmd/bootstrap"
+	"github.com/erik-sostenes/bonds-publisher-challenge/cmd/http/health"
 )
 
 const defaultPort = "8080"
@@ -26,7 +29,9 @@ func main() {
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("/status", HealthCheck())
+	mux.HandleFunc("/status", health.HealthCheck())
+
+	bootstrap.BondInjector(mux)
 
 	svr := http.Server{
 		Addr:    ":" + port,
@@ -45,5 +50,5 @@ func main() {
 	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelFunc()
 
-	_= svr.Shutdown(ctx)
+	_ = svr.Shutdown(ctx)
 }
