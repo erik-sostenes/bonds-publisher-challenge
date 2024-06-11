@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/server/response"
@@ -14,8 +13,6 @@ func PostBondHandler() response.HttpHandlerFunc {
 		if err = response.Bind(w, r, &bondRequest); err != nil {
 			return
 		}
-
-		fmt.Println(bondRequest)
 
 		return response.JSON(w, http.StatusCreated, nil)
 	}

@@ -1,5 +1,6 @@
 package handlers
 
+// BondRequest represnts a DTO(Data Transfer Object)
 type BondRequest struct {
 	ID             string  `json:"id"`
 	Name           string  `json:"name"`
