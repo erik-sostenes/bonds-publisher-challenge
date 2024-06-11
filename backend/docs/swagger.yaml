@@ -62,7 +62,7 @@ paths:
       operationId: getUserBonds
       description: Retrieve bonds posted by a specific user with pagination. Authentication required
       parameters:
-        - name: user_id
+        - name: current_owner_id
           in: query
           required: true
           description: ID of the user
@@ -164,17 +164,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
-  /api/v1/bonds/buy:
-    post:
+  /api/v1/bonds/buy/{bond_id}/{buyer_user_id}:
+    put:
       summary: Buy a bond
       operationId: buyBond
       description: Purchase a bond by its unique ID. Authentication required.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/BuyBondRequest"
+      parameters:
+        - in: path
+          name: bond_id
+          required: true
+          description: Bond id
+          schema:
+            type: string
+        - in: path
+          name: buyer_user_id
+          required: true
+          description: Buyer user id
+          schema:
+            type: string
       responses:
         "201":
           description: Bond successfully purchased
@@ -335,20 +342,6 @@ components:
           type: string
           description: Password for the user.
           example: P@ssw0rd
-    BuyBondRequest:
-      type: object
-      required:
-        - userId
-        - bondId
-      properties:
-        userId:
-          type: string
-          description: Unique identifier of the user making the purchase.
-          example: 123e4567-e89b-12d3-a456-426614174000
-        bondId:
-          type: string
-          description: Unique identifier of the bond being purchased.
-          example: adb6b560-0eef-42bc-9d16-df48f30e89b2
     LoginRequest:
       type: object
       required:
