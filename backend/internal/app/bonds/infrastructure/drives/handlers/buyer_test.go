@@ -56,7 +56,7 @@ func Test_PutBondBuyerHandler(t *testing.T) {
 			},
 			expectedStatusCode: http.StatusOK,
 		},
-		"Given the parameter'bond_id' is invalid, a status code 400 is expected": {
+		"Given the parameter 'bond_id' is invalid, a status code 400 is expected": {
 			request: httptest.NewRequest(http.MethodPut, "/api/v1/bonds/buy", http.NoBody),
 			urlParams: struct {
 				bondId      string
