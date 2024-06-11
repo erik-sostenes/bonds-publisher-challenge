@@ -28,6 +28,10 @@ func BondErrorHandler(apiFunc response.HttpHandlerFunc) http.HandlerFunc {
 					domain.DuplicateBond:
 					_ = response.JSON(w, http.StatusBadRequest, message)
 					return
+
+				case domain.BondNotFound:
+					_ = response.JSON(w, http.StatusNotFound, message)
+					return
 				default:
 					_ = response.JSON(w, http.StatusBadRequest, message)
 					return

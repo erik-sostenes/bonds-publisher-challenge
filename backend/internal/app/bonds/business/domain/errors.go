@@ -21,6 +21,7 @@ const (
 	InvalidBondQuantitySale
 	InvalidBondSalesPrice
 	DuplicateBond
+	BondNotFound
 )
 
 // BondError represents an error type for bond-related errors

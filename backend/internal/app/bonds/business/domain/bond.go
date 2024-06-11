@@ -65,8 +65,8 @@ func (b BondQuantitySale) Validate() (*BondQuantitySale, error) {
 }
 
 // QuantitySale returns the integer representation of the BondQuantitySale
-func (b BondQuantitySale) QuantitySale() int {
-	return int(b)
+func (b BondQuantitySale) QuantitySale() int64 {
+	return int64(b)
 }
 
 // BondSalesPrice represents the sales price of bonds
@@ -184,7 +184,7 @@ func (b Bond) Name() string {
 }
 
 // QuantitySale returns the quantity of bonds available for sale
-func (b Bond) QuantitySale() int {
+func (b Bond) QuantitySale() int64 {
 	return b.bondQuantitySale.QuantitySale()
 }
 

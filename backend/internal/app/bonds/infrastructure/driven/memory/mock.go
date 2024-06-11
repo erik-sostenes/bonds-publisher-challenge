@@ -28,3 +28,29 @@ func (b *bondMemory) Save(ctx context.Context, bond *domain.Bond) error {
 
 	return nil
 }
+
+func (b *bondMemory) Update(ctx context.Context, bID *domain.BondID, bcOwnerId *domain.BondCurrentOwnerId) error {
+	ok := b.set.Exist(bID.ID())
+	if !ok {
+		return fmt.Errorf("%w = Bond with id '%s' was not found", domain.BondNotFound, bID.ID())
+	}
+
+	crtBond := b.set.GetByItem(bID.ID())
+
+	newBond, err := domain.NewBond(
+		crtBond.ID(),
+		crtBond.Name(),
+		crtBond.CreatorUserID(),
+		bcOwnerId.ID(),
+		!crtBond.IsBought(),
+		crtBond.QuantitySale(),
+		crtBond.SalesPrice(),
+	)
+	if err != nil {
+		return err
+	}
+
+	b.set.Add(newBond.ID(), newBond)
+
+	return nil
+}
