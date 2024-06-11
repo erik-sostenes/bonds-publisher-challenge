@@ -32,6 +32,7 @@ func main() {
 	mux.HandleFunc("/status", health.HealthCheck())
 
 	bootstrap.BondInjector(mux)
+	_ = bootstrap.PostgreSQLInjector()
 
 	svr := http.Server{
 		Addr:    ":" + port,
