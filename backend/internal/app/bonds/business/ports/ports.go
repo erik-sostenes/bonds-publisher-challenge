@@ -20,6 +20,10 @@ type (
 	UserBondsGetter interface {
 		Get(context.Context, *domain.BondCurrentOwnerId, *filter.Filter) (domain.Bonds, error)
 	}
+
+	BondsGetter interface {
+		Get(context.Context, *domain.BondCurrentOwnerId, *filter.Filter) (domain.Bonds, error)
+	}
 )
 
 type (
@@ -33,6 +37,10 @@ type (
 	}
 
 	UserBondsRetriever interface {
+		Retrieve(context.Context, *domain.BondCurrentOwnerId, *filter.Filter) (domain.Bonds, error)
+	}
+
+	BondsRetriever interface {
 		Retrieve(context.Context, *domain.BondCurrentOwnerId, *filter.Filter) (domain.Bonds, error)
 	}
 )

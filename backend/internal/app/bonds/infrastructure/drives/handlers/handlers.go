@@ -11,7 +11,8 @@ import (
 func BondHandler(
 	creator ports.BondCreator,
 	buyer ports.BondBuyer,
-	retriever ports.UserBondsRetriever,
+	usrBondsRetriever ports.UserBondsRetriever,
+	bondsRetriever ports.BondsRetriever,
 	mux *http.ServeMux,
 ) {
 	mux.HandleFunc(
@@ -24,6 +25,10 @@ func BondHandler(
 	)
 	mux.HandleFunc(
 		"GET /api/v1/bonds/user",
-		md.Recovery(md.Logger(md.CORS(BondErrorHandler(GetBondsPerUserHandler(retriever))))),
+		md.Recovery(md.Logger(md.CORS(BondErrorHandler(GetBondsPerUserHandler(usrBondsRetriever))))),
+	)
+	mux.HandleFunc(
+		"GET /api/v1/bonds/all",
+		md.Recovery(md.Logger(md.CORS(BondErrorHandler(GetBondsHandler(bondsRetriever))))),
 	)
 }

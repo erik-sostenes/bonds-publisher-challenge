@@ -14,6 +14,7 @@ func BondInjector(mux *http.ServeMux) {
 	bondCreator := logic.NewBondCreator(&memo)
 	bondBuyer := logic.NewBondBuyer(&memo)
 	userBondsRetriever := logic.NewUserBondsRetriever(&memo)
+	bondsRetriever := logic.NewBondsRetriever(&memo)
 
-	handlers.BondHandler(bondCreator, bondBuyer, userBondsRetriever, mux)
+	handlers.BondHandler(bondCreator, bondBuyer, userBondsRetriever, bondsRetriever, mux)
 }
