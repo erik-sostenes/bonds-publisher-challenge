@@ -21,7 +21,7 @@ func PostUserHandler(creator ports.UserCreator) response.HttpHandlerFunc {
 			return
 		}
 
-		user, err := userRequest.toBusiness()
+		user, err := userRequest.ToBusiness()
 		if err != nil {
 			return
 		}

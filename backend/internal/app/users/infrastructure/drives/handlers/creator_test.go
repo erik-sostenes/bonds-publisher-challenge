@@ -12,7 +12,7 @@ import (
 	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/server/response"
 )
 
-func Test_PostBondHandler(t *testing.T) {
+func Test_PostUserHandler(t *testing.T) {
 	type HttpHandlerFunc func() (response.HttpHandlerFunc, error)
 
 	tdt := map[string]struct {
@@ -66,7 +66,7 @@ func Test_PostBondHandler(t *testing.T) {
 					},
 				}
 
-				user, err := userRequest.toBusiness()
+				user, err := userRequest.ToBusiness()
 				if err != nil {
 					t.Fatal(err)
 				}

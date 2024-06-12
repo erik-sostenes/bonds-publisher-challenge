@@ -9,8 +9,8 @@ type UserRequest struct {
 	Role     RoleRequest `json:"role"`
 }
 
-func (a *UserRequest) toBusiness() (*domain.User, error) {
-	role, err := a.Role.toBusiness()
+func (a *UserRequest) ToBusiness() (*domain.User, error) {
+	role, err := a.Role.ToBusiness()
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ type RoleRequest struct {
 	Type string `json:"type"`
 }
 
-func (r *RoleRequest) toBusiness() (*domain.Role, error) {
+func (r *RoleRequest) ToBusiness() (*domain.Role, error) {
 	return domain.NewRole(r.ID, r.Type)
 }
 
@@ -33,7 +33,7 @@ func (r *RolesRequest) ToBusiness() ([]*domain.Role, error) {
 	roles := make([]*domain.Role, 0, len(*r))
 
 	for _, role := range *r {
-		rlBusiness, err := role.toBusiness()
+		rlBusiness, err := role.ToBusiness()
 		if err != nil {
 			return roles, err
 		}

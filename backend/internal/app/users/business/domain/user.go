@@ -110,6 +110,6 @@ func (a *User) Password() string {
 }
 
 // Roles returns the Role of the User
-func (a *User) Roles() Role {
+func (a *User) Role() Role {
 	return *a.role
 }
