@@ -18,7 +18,7 @@ type (
 	BondsRequest []*BondRequest
 )
 
-func (b BondRequest) toBusiness() (*domain.Bond, error) {
+func (b BondRequest) ToBusiness() (*domain.Bond, error) {
 	return domain.NewBond(
 		b.ID,
 		b.Name,

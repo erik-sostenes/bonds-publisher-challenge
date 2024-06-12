@@ -15,7 +15,11 @@ import (
 func Test_BondOwnerUpdater(t *testing.T) {
 	type FactoryFunc func() (ports.BondOwnerUpdater, *sql.DB)
 
-	const sqlQueryDeleteBond = `DELETE FROM bonds WHERE id = $1`
+	const (
+		sqlQueryDeleteBond = `DELETE FROM bonds WHERE id = $1`
+		sqlQueryInsertUser = `INSERT INTO users(id, name, password) VALUES($1, $2, $3)`
+		sqlQueryDeleteUser = `DELETE FROM users WHERE id = $1`
+	)
 
 	tdt := map[string]struct {
 		bond          handlers.BondRequest
@@ -40,15 +44,7 @@ func Test_BondOwnerUpdater(t *testing.T) {
 					CurrentOwnerId: "580b87da-e389-4290-acbf-f6191467f401",
 				}
 
-				bond, err := domain.NewBond(
-					bondRequest.ID,
-					bondRequest.Name,
-					bondRequest.CreatorUserId,
-					bondRequest.CurrentOwnerId,
-					bondRequest.IsBought,
-					bondRequest.QuantitySale,
-					bondRequest.SalesPrice,
-				)
+				bond, err := bondRequest.ToBusiness()
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -89,15 +85,7 @@ func Test_BondOwnerUpdater(t *testing.T) {
 					CurrentOwnerId: "580b87da-e389-4290-acbf-f6191467f401",
 				}
 
-				bond, err := domain.NewBond(
-					bondRequest.ID,
-					bondRequest.Name,
-					bondRequest.CreatorUserId,
-					bondRequest.CurrentOwnerId,
-					bondRequest.IsBought,
-					bondRequest.QuantitySale,
-					bondRequest.SalesPrice,
-				)
+				bond, err := bondRequest.ToBusiness()
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -110,6 +98,35 @@ func Test_BondOwnerUpdater(t *testing.T) {
 			expectedError: domain.InvalidBondBought,
 		},
 	}
+
+	conn := db.PostgreSQLInjector()
+	ctx := context.Background()
+
+	if err := func() (err error) {
+		_, err = conn.ExecContext(ctx, sqlQueryInsertUser, "580b87da-e389-4290-acbf-f6191467f401", "Erik Sostenes Simon", "12345")
+		if err != nil {
+			return
+		}
+
+		_, err = conn.ExecContext(ctx, sqlQueryInsertUser, "1148ab29-132b-4df7-9acc-b42a32c42a9f", "Estefany Sostenes Simon", "12345")
+		if err != nil {
+			return
+		}
+		return
+	}(); err != nil {
+		t.Fatal(err)
+	}
+
+	t.Cleanup(func() {
+		_, err := conn.ExecContext(ctx, sqlQueryDeleteUser, "580b87da-e389-4290-acbf-f6191467f401")
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = conn.ExecContext(ctx, sqlQueryDeleteUser, "1148ab29-132b-4df7-9acc-b42a32c42a9f")
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
 
 	for name, tsc := range tdt {
 		t.Run(name, func(t *testing.T) {

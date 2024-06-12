@@ -15,7 +15,11 @@ import (
 func Test_BondSaver(t *testing.T) {
 	type FactoryFunc func() (ports.BondSaver, *sql.DB)
 
-	const sqlQueryDeleteBond = `DELETE FROM bonds WHERE id = $1`
+	const (
+		sqlQueryInsertUser = `INSERT INTO users(id, name, password) VALUES($1, $2, $3)`
+		sqlQueryDeleteUser = `DELETE FROM users WHERE id = $1`
+		sqlQueryDeleteBond = `DELETE FROM bonds WHERE id = $1`
+	)
 
 	tdt := map[string]struct {
 		bond          handlers.BondRequest
@@ -47,52 +51,64 @@ func Test_BondSaver(t *testing.T) {
 			},
 			factoryFunc: func() (ports.BondSaver, *sql.DB) {
 				conn := db.PostgreSQLInjector()
-				return NewBondSaver(conn), conn
+				saver := NewBondSaver(conn)
+				bondRequest := handlers.BondRequest{
+					ID:             "ba1dc545-90a0-4501-af99-8a5944ca38c4",
+					Name:           "Global Secure Corporate Bond 2024",
+					QuantitySale:   1,
+					SalesPrice:     400.0000,
+					CreatorUserId:  "580b87da-e389-4290-acbf-f6191467f401",
+					CurrentOwnerId: "580b87da-e389-4290-acbf-f6191467f401",
+				}
+
+				bond, err := bondRequest.ToBusiness()
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				if err := saver.Save(context.TODO(), bond); err != nil {
+					t.Fatal(err)
+				}
+
+				return saver, conn
 			},
 			expectedError: domain.DuplicateBond,
 		},
 	}
 
 	conn := db.PostgreSQLInjector()
-	bondRequest := handlers.BondRequest{
-		ID:             "ba1dc545-90a0-4501-af99-8a5944ca38c4",
-		Name:           "Global Secure Corporate Bond 2024",
-		QuantitySale:   1,
-		SalesPrice:     400.0000,
-		CreatorUserId:  "580b87da-e389-4290-acbf-f6191467f401",
-		CurrentOwnerId: "580b87da-e389-4290-acbf-f6191467f401",
+	ctx := context.Background()
+
+	// setUp
+	if err := func() (err error) {
+		_, err = conn.ExecContext(ctx, sqlQueryInsertUser, "580b87da-e389-4290-acbf-f6191467f401", "Erik Sostenes Simon", "12345")
+		if err != nil {
+			return
+		}
+
+		_, err = conn.ExecContext(ctx, sqlQueryInsertUser, "1148ab29-132b-4df7-9acc-b42a32c42a9f", "Estefany Sostenes Simon", "12345")
+		if err != nil {
+			return
+		}
+		return
+	}(); err != nil {
+		t.Fatal(err)
 	}
 
-	// SetUP
-	func() {
-		saver := NewBondSaver(conn)
-		bond, err := domain.NewBond(
-			bondRequest.ID,
-			bondRequest.Name,
-			bondRequest.CreatorUserId,
-			bondRequest.CurrentOwnerId,
-			bondRequest.IsBought,
-			bondRequest.QuantitySale,
-			bondRequest.SalesPrice,
-		)
+	t.Cleanup(func() {
+		_, err := conn.ExecContext(ctx, sqlQueryDeleteUser, "580b87da-e389-4290-acbf-f6191467f401")
 		if err != nil {
 			t.Fatal(err)
 		}
-
-		if err := saver.Save(context.TODO(), bond); err != nil {
-			t.Fatal(err)
-		}
-	}()
-
-	t.Cleanup(func() {
-		if _, err := conn.Exec(sqlQueryDeleteBond, bondRequest.ID); err != nil {
+		_, err = conn.ExecContext(ctx, sqlQueryDeleteUser, "1148ab29-132b-4df7-9acc-b42a32c42a9f")
+		if err != nil {
 			t.Fatal(err)
 		}
 	})
 
 	for name, tsc := range tdt {
 		t.Run(name, func(t *testing.T) {
-			saver, _ := tsc.factoryFunc()
+			saver, conn := tsc.factoryFunc()
 
 			bond, err := domain.NewBond(
 				tsc.bond.ID,

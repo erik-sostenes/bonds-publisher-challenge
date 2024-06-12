@@ -21,7 +21,7 @@ func PostBondHandler(creator ports.BondCreator) response.HttpHandlerFunc {
 			return
 		}
 
-		bond, err := bondRequest.toBusiness()
+		bond, err := bondRequest.ToBusiness()
 		if err != nil {
 			return
 		}

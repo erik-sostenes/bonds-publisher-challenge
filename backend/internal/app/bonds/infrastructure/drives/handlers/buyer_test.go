@@ -42,7 +42,7 @@ func Test_PutBondBuyerHandler(t *testing.T) {
 					CurrentOwnerId: "580b87da-e389-4290-acbf-f6191467f401",
 				}
 
-				bond, err := bondRequest.toBusiness()
+				bond, err := bondRequest.ToBusiness()
 				if err != nil {
 					return nil, err
 				}

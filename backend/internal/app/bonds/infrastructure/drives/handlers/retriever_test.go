@@ -31,7 +31,7 @@ func Test_GetBondsPerUserHandler(t *testing.T) {
 					CurrentOwnerId: "580b87da-e389-4290-acbf-f6191467f401",
 				}
 
-				bond, err := bondRequest.toBusiness()
+				bond, err := bondRequest.ToBusiness()
 				if err != nil {
 					return nil, err
 				}
@@ -140,7 +140,7 @@ func Test_GetBondsHandler(t *testing.T) {
 					CurrentOwnerId: "580b87da-e389-4290-acbf-f6191467f401",
 				}
 
-				bond, err := bondRequest.toBusiness()
+				bond, err := bondRequest.ToBusiness()
 				if err != nil {
 					return nil, err
 				}

@@ -38,9 +38,10 @@ func (b *bondOwnerUpdater) Update(ctx context.Context, bID *domain.BondID, bCrOw
 			return fmt.Errorf("%w = Bond with id '%s' was not found", domain.BondNotFound, bID.ID())
 		}
 
-		const sqlQueryUpdateBondOwner = `UPDATE bonds
-					SET current_owner_id = $1, is_bought = TRUE
-					WHERE id = $2 AND is_bought = FALSE`
+		const sqlQueryUpdateBondOwner = `
+			UPDATE bonds
+			SET current_owner_id = $1, is_bought = TRUE
+			WHERE id = $2 AND is_bought = FALSE`
 
 		result, err := b.conn.ExecContext(ctx, sqlQueryUpdateBondOwner,
 			bCrOwId.ID(),

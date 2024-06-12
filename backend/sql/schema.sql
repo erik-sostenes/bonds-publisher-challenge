@@ -1,12 +1,13 @@
 DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users(
   id UUID PRIMARY KEY,
-  name VARCHAR(50) NOT NULL,
+  name VARCHAR(50)  UNIQUE NOT NULL,
   password VARCHAR(200) NOT NULL
 );
 
+
 DROP TYPE IF EXISTS ROLE CASCADE;
-CREATE TYPE ROLE AS ENUM ('CLIENT');
+CREATE TYPE ROLE AS ENUM ('USER');
 
 DROP TABLE IF EXISTS roles CASCADE;
 CREATE TABLE roles(
@@ -22,7 +23,7 @@ CREATE TABLE permissions(
   permission PERMISSION NOT NULL,
   role_id SERIAL NOT NULL,
   UNIQUE(permission, role_id),
-  CONSTRAINT fk_permissons_role FOREIGN KEY(role_id) REFERENCES roles(id)
+  CONSTRAINT fk_permissons_role FOREIGN KEY(role_id) REFERENCES roles(id) 
 );
 
 DROP TABLE IF EXISTS users_roles CASCADE;
@@ -30,7 +31,7 @@ CREATE TABLE users_roles(
     user_id UUID,
     role_id INTEGER,
     UNIQUE(user_id, role_id),
-    CONSTRAINT fk_users_roles_account FOREIGN KEY(user_id) REFERENCES users(id),
+    CONSTRAINT fk_users_roles_user FOREIGN KEY(user_id) REFERENCES users(id),
     CONSTRAINT fk_users_roles_role FOREIGN KEY(role_id) REFERENCES roles(id)
 );
 
@@ -48,8 +49,3 @@ CREATE TABLE bonds (
     CONSTRAINT fk_creator_user_user FOREIGN KEY (creator_user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_current_owner_user FOREIGN KEY (current_owner_id) REFERENCES users (id) ON DELETE CASCADE
 );
-
--- inserts
-INSERT INTO users(id, name, password) VALUES
-  ('580b87da-e389-4290-acbf-f6191467f401', 'Erik Sostenes Simon', '12345'),
-  ('1148ab29-132b-4df7-9acc-b42a32c42a9f', 'Estefany Sostenes Simon', '12345');
