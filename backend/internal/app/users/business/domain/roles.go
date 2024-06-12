@@ -55,12 +55,12 @@ type Role struct {
 func NewRole(roleID uint8, roleType string) (*Role, error) {
 	roleIDVO, err := RoleID(roleID).Validate()
 	if err != nil {
-		return &Role{}, nil
+		return &Role{}, err
 	}
 
 	roleTypeVO, err := RoleType(roleType).Validate()
 	if err != nil {
-		return &Role{}, nil
+		return &Role{}, err
 	}
 
 	return &Role{

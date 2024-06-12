@@ -34,11 +34,13 @@ func Bind(w http.ResponseWriter, r *http.Request, body any) error {
 
 	switch mediaType {
 	case "application/json; charset=utf-8", "application/json":
+
 		err = json.NewDecoder(r.Body).Decode(body)
 		if err != nil {
-			return JSON(w, http.StatusUnprocessableEntity, Response{
+			_ = JSON(w, http.StatusUnprocessableEntity, Response{
 				Message: "the format of the body of the request is malformed",
 			})
+			return err
 		}
 	default:
 		return JSON(w, http.StatusUnsupportedMediaType, Response{

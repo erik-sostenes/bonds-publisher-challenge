@@ -59,7 +59,7 @@ type User struct {
 	userID       UserID
 	userName     UserName
 	userPassword UserPassword
-	roles        []*Role
+	role         *Role
 }
 
 // NewUser creates a new User instance with the provided parameters
@@ -67,7 +67,7 @@ func NewUser(
 	userID,
 	userName,
 	userPassword string,
-	roles []*Role,
+	role *Role,
 ) (*User, error) {
 	userIDVO, err := UserID(userID).Validate()
 	if err != nil {
@@ -88,7 +88,7 @@ func NewUser(
 		userID:       *userIDVO,
 		userName:     *userNameVO,
 		userPassword: *userPasswordVO,
-		roles:        roles,
+		role:         role,
 	}
 
 	return User, nil
@@ -110,6 +110,6 @@ func (a *User) Password() string {
 }
 
 // Roles returns the Role of the User
-func (a *User) Roles() []*Role {
-	return a.roles
+func (a *User) Roles() Role {
+	return *a.role
 }

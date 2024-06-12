@@ -7,6 +7,7 @@ const (
 	InvalidUserID UserError = iota + 1
 	InvalidUserName
 	InvalidUserPassword
+	DuplicateUser
 )
 
 // UserError represents an error type for user-related errors
