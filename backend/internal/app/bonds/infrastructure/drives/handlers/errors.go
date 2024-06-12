@@ -26,7 +26,8 @@ func BondErrorHandler(apiFunc response.HttpHandlerFunc) http.HandlerFunc {
 					domain.InvalidBondName,
 					domain.InvalidBondQuantitySale,
 					domain.InvalidBondSalesPrice,
-					domain.DuplicateBond:
+					domain.DuplicateBond,
+					domain.InvalidBondBought:
 					_ = response.JSON(w, http.StatusBadRequest, message)
 					return
 

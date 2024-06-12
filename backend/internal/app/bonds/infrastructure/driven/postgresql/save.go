@@ -28,15 +28,17 @@ func (b *bondSaver) Save(ctx context.Context, bond *domain.Bond) (err error) {
 									name,
 									quantity_sale,
 									sales_price,
+									is_bought,
 									creator_user_id,
 									current_owner_id
-								) VALUES($1, $2, $3, $4, $5, $6)`
+								) VALUES($1, $2, $3, $4, $5, $6, $7)`
 
 	_, err = b.conn.ExecContext(ctx, sqlQueryInsertBond,
 		bond.ID(),
 		bond.Name(),
 		bond.QuantitySale(),
 		bond.SalesPrice(),
+		bond.IsBought(),
 		bond.CreatorUserID(),
 		bond.CurrentOwnerID(),
 	)
@@ -49,7 +51,6 @@ func (b *bondSaver) Save(ctx context.Context, bond *domain.Bond) (err error) {
 		}
 
 		slog.ErrorContext(ctx, "database error", "error", err.Error())
-
 		return errors.New("an error occurred while creating a bond")
 	}
 
