@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/erik-sostenes/bonds-publisher-challenge/cmd/bootstrap"
+	"github.com/erik-sostenes/bonds-publisher-challenge/cmd/bootstrap/db"
 	"github.com/erik-sostenes/bonds-publisher-challenge/cmd/http/health"
 )
 
@@ -32,7 +33,7 @@ func main() {
 	mux.HandleFunc("/status", health.HealthCheck())
 
 	bootstrap.BondInjector(mux)
-	_ = bootstrap.PostgreSQLInjector()
+	_ = db.PostgreSQLInjector()
 
 	svr := http.Server{
 		Addr:    ":" + port,
