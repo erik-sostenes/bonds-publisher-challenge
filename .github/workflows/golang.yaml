@@ -7,6 +7,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: testdb
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       # Clone repository
       - name: Check out the repository
@@ -34,8 +49,29 @@ jobs:
         run: golangci-lint run --verbose
         working-directory: ./backend
 
+        # Wait for PostgreSQL to be ready
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready --host=localhost --port=5432; do
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 1
+          done
+
+      # Run schema.sql to set up the database
+      - name: Set up PostgreSQL schema
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: postgres
+          PGPASSWORD: postgres
+          PGDATABASE: testdb
+        run: |
+          psql -f ./backend/sql/schema.sql
+
       # Run tests
       - name: Test
+        env:
+          DSN_POSTGRESQL: "postgres://postgres:postgres@localhost:5432/testdb?sslmode=disable"
         run: go test -v ./...
         working-directory: ./backend
 

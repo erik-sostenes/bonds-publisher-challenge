@@ -48,3 +48,8 @@ CREATE TABLE bonds (
     CONSTRAINT fk_creator_user_user FOREIGN KEY (creator_user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_current_owner_user FOREIGN KEY (current_owner_id) REFERENCES users (id) ON DELETE CASCADE
 );
+
+-- inserts
+INSERT INTO users(id, name, password) VALUES
+  ('580b87da-e389-4290-acbf-f6191467f401', 'Erik Sostenes Simon', '12345'),
+  ('1148ab29-132b-4df7-9acc-b42a32c42a9f', 'Estefany Sostenes Simon', '12345');
