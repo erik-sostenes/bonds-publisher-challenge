@@ -23,15 +23,16 @@ func NewBondSaver(conn *sql.DB) ports.BondSaver {
 }
 
 func (b *bondSaver) Save(ctx context.Context, bond *domain.Bond) (err error) {
-	const sqlQueryInsertBond = `INSERT INTO bonds(
-									id,
-									name,
-									quantity_sale,
-									sales_price,
-									is_bought,
-									creator_user_id,
-									current_owner_id
-								) VALUES($1, $2, $3, $4, $5, $6, $7)`
+	const sqlQueryInsertBond = `
+		INSERT INTO bonds(
+							id,
+							name,
+							quantity_sale,
+							sales_price,
+							is_bought,
+							creator_user_id,
+							current_owner_id
+						) VALUES($1, $2, $3, $4, $5, $6, $7)`
 
 	_, err = b.conn.ExecContext(ctx, sqlQueryInsertBond,
 		bond.ID(),
@@ -50,7 +51,7 @@ func (b *bondSaver) Save(ctx context.Context, bond *domain.Bond) (err error) {
 			}
 		}
 
-		slog.ErrorContext(ctx, "database error", "error", err.Error())
+		slog.ErrorContext(ctx, "database error", "msg", err.Error())
 		return errors.New("an error occurred while creating a bond")
 	}
 

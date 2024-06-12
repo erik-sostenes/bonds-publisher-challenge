@@ -50,9 +50,9 @@ func (o FilterSize) Size() uint64 {
 
 // Filter holds the pagination details including page number, limit, and size
 type Filter struct {
-	orderFilterPage  FilterPage
-	orderFilterLimit FilterLimit
-	orderFilterSize  FilterSize
+	filterPage  FilterPage
+	filterLimit FilterLimit
+	filterSize  FilterSize
 }
 
 func NewFilter(page, limit uint64) (*Filter, error) {
@@ -66,27 +66,27 @@ func NewFilter(page, limit uint64) (*Filter, error) {
 		return &Filter{}, err
 	}
 	return &Filter{
-		orderFilterPage:  *pageVO,
-		orderFilterLimit: *limitVO,
+		filterPage:  *pageVO,
+		filterLimit: *limitVO,
 	}, nil
 }
 
 // Stop calculates and returns the stop index for pagination.
 func (o *Filter) Stop() uint64 {
-	return o.orderFilterPage.Page() * o.orderFilterLimit.Limit()
+	return o.filterPage.Page() * o.filterLimit.Limit()
 }
 
 // Start calculates and returns the start index for pagination.
 func (o *Filter) Start() uint64 {
-	return (o.orderFilterPage.Page() - 1) * o.orderFilterLimit.Limit()
+	return (o.filterPage.Page() - 1) * o.filterLimit.Limit()
 }
 
-// SetSize sets the size value for the order filter.
+// SetSize sets the size value for the filter.
 func (o *Filter) SetSize(size uint8) {
-	o.orderFilterSize = FilterSize(size)
+	o.filterSize = FilterSize(size)
 }
 
-// Size returns the size value of the order filter.
+// Size returns the size value of the filter.
 func (o *Filter) Size() uint64 {
-	return o.orderFilterSize.Size()
+	return o.filterSize.Size()
 }

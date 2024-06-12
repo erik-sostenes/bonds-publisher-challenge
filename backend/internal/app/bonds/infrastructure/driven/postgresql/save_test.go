@@ -120,6 +120,8 @@ func Test_BondSaver(t *testing.T) {
 				if !errors.Is(asBond, tsc.expectedError) {
 					t.Errorf("'%v' error was expected, but '%s' error was obtained", tsc.expectedError, asBond)
 				}
+			} else if err != nil {
+				t.Errorf("'%v' error was expected, but '%s' error was obtained", tsc.expectedError, asBond)
 			}
 		})
 	}

@@ -30,7 +30,7 @@ func (b *bondOwnerUpdater) Update(ctx context.Context, bID *domain.BondID, bCrOw
 		var isExisting bool
 		err = tx.QueryRow(sqlQueryBondExist, bID.ID()).Scan(&isExisting)
 		if err != nil {
-			slog.ErrorContext(ctx, "database error", "error", err.Error())
+			slog.ErrorContext(ctx, "database error", "msg", err.Error())
 			return errors.New("an error occurred while buying a bond")
 		}
 
@@ -47,13 +47,13 @@ func (b *bondOwnerUpdater) Update(ctx context.Context, bID *domain.BondID, bCrOw
 			bID.ID(),
 		)
 		if err != nil {
-			slog.ErrorContext(ctx, "database error", "error", err.Error())
+			slog.ErrorContext(ctx, "database error", "msg", err.Error())
 			return errors.New("an error occurred while buying a bond")
 		}
 
 		rowsAffected, err := result.RowsAffected()
 		if err != nil {
-			slog.ErrorContext(ctx, "database error", "error", err.Error())
+			slog.ErrorContext(ctx, "database error", "msg", err.Error())
 			return errors.New("an error occurred while buying a bond")
 		}
 
