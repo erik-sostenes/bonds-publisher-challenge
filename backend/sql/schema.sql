@@ -25,8 +25,8 @@ CREATE TABLE permissions(
   CONSTRAINT fk_permissons_role FOREIGN KEY(role_id) REFERENCES roles(id)
 );
 
-DROP TABLE IF EXISTS accounts_roles CASCADE;
-CREATE TABLE accounts_roles(
+DROP TABLE IF EXISTS users_roles CASCADE;
+CREATE TABLE users_roles(
     user_id UUID,
     role_id INTEGER,
     UNIQUE(user_id, role_id),
