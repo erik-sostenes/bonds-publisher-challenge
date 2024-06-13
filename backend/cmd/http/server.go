@@ -33,7 +33,7 @@ func main() {
 	mux.HandleFunc("/status", health.HealthCheck())
 
 	dbPtgSQL := db.PostgreSQLInjector()
-	bootstrap.BondInjector(mux)
+	bootstrap.BondInjector(dbPtgSQL, mux)
 	bootstrap.UserInjector(dbPtgSQL, mux)
 
 	svr := http.Server{
