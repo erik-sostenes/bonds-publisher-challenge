@@ -27,6 +27,13 @@ func UserErrorHandler(apiFunc response.HttpHandlerFunc) http.HandlerFunc {
 					domain.DuplicateUser:
 					_ = response.JSON(w, http.StatusBadRequest, message)
 					return
+				case domain.InvalidToken, domain.PasswordDoesNotMatch:
+					_ = response.JSON(w, http.StatusUnauthorized, message)
+					return
+				case domain.UserNotFound:
+					_ = response.JSON(w, http.StatusNotFound, message)
+					return
+
 				default:
 					_ = response.JSON(w, http.StatusInternalServerError, message)
 					return

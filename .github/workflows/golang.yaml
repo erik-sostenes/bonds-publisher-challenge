@@ -49,7 +49,23 @@ jobs:
         run: golangci-lint run --verbose
         working-directory: ./backend
 
-        # Wait for PostgreSQL to be ready
+      # Change permissions for the keys script
+      - name: Make keys script executable
+        run: chmod +x ./backend/scripts/keys.bash
+
+      # Generate keys
+      - name: Generate keys
+        run: ./backend/scripts/keys.bash
+        shell: bash
+
+      # Set environment variables for keys using base64 encoding
+      - name: Set environment variables
+        run: |
+          echo "PRIVATE_KEY=$(base64 -w 0 ./backend/private_key.pem)" >> $GITHUB_ENV
+          echo "PUBLIC_KEY=$(base64 -w 0 ./backend/public_key.pem)" >> $GITHUB_ENV
+        shell: bash
+
+      # Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL
         run: |
           until pg_isready --host=localhost --port=5432; do
@@ -72,6 +88,8 @@ jobs:
       - name: Test
         env:
           DSN_POSTGRESQL: "postgres://postgres:postgres@localhost:5432/testdb?sslmode=disable"
+          PRIVATE_KEY: ${{ env.PRIVATE_KEY }}
+          PUBLIC_KEY: ${{ env.PUBLIC_KEY }}
         run: go test -v ./...
         working-directory: ./backend
 

@@ -8,6 +8,9 @@ const (
 	InvalidUserName
 	InvalidUserPassword
 	DuplicateUser
+	InvalidToken
+	UserNotFound
+	PasswordDoesNotMatch
 )
 
 // UserError represents an error type for user-related errors
@@ -15,7 +18,7 @@ type UserError uint16
 
 // UserError implements the error interface
 func (b UserError) Error() string {
-	return "user: " + strconv.FormatUint(uint64(b), 10)
+	return "user = " + strconv.FormatUint(uint64(b), 10)
 }
 
 const (

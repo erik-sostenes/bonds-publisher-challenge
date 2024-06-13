@@ -3,6 +3,7 @@ package bootstrap
 import (
 	"database/sql"
 	"net/http"
+	"os"
 
 	bondLgc "github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/business/logic"
 	bondPgrsql "github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/infrastructure/driven/postgresql"
@@ -32,5 +33,11 @@ func UserInjector(db *sql.DB, mux *http.ServeMux) {
 	usrSaver := usrPgrsql.NewUserSaver(db)
 	usrCreator := usrLgc.NewUserCreator(usrSaver)
 
-	usrHlr.UserHandler(usrCreator, mux)
+	privateKey := os.Getenv("PRIVATE_KEY")
+
+	usrGetter := usrPgrsql.NewUserGetter(db)
+	tokenGenerator := usrLgc.NewTokenGenerator(privateKey)
+	usrAuthorizer := usrLgc.NewUserAuthorizer(tokenGenerator, usrGetter)
+
+	usrHlr.UserHandler(usrCreator, usrAuthorizer, mux)
 }

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // UserID represents the user unique identifier
@@ -50,8 +51,24 @@ func (a UserPassword) Validate() (*UserPassword, error) {
 	return &a, nil
 }
 
+func (a UserPassword) Encrypt() *UserPassword {
+	bytes, _ := bcrypt.GenerateFromPassword([]byte(string(a)), bcrypt.DefaultCost)
+	hashPassword := UserPassword(string(bytes))
+
+	return &hashPassword
+}
+
 func (a UserPassword) Password() string {
 	return string(a)
+}
+
+func (a UserPassword) Equals(accountPassword *UserPassword) (err error) {
+	err = bcrypt.CompareHashAndPassword([]byte(string(a)), []byte(accountPassword.Password()))
+	if err != nil {
+		return fmt.Errorf("%w: password does not match the account password", PasswordDoesNotMatch)
+	}
+
+	return err
 }
 
 // User represents the Object Domain of our business
@@ -106,10 +123,15 @@ func (a *User) Name() string {
 
 // Password returns the Password of the User
 func (a *User) Password() string {
-	return a.userPassword.Password()
+	return a.userPassword.Encrypt().Password()
 }
 
 // Roles returns the Role of the User
 func (a *User) Role() Role {
 	return *a.role
+}
+
+// PasswordMatches check the match of passwords
+func (a *User) PasswordMatches(password *UserPassword) error {
+	return a.userPassword.Equals(password)
 }

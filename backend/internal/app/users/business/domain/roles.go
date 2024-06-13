@@ -73,6 +73,6 @@ func (r Role) ID() uint8 {
 	return r.roleID.ID()
 }
 
-func (r Role) Role() string {
+func (r Role) Type() string {
 	return r.roleType.RoleType()
 }
