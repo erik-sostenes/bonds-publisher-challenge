@@ -11,8 +11,8 @@ import (
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/users/business/ports"
 )
 
-func Test_UserSaver(t *testing.T) {
-	type FactoryFunc func() (ports.UserSaver, *sql.DB)
+func Test_UserGetter(t *testing.T) {
+	type FactoryFunc func() (ports.UserGetter, *sql.DB)
 
 	const (
 		sqlQueryInsertRole        = `INSERT INTO roles(id, type) VALUES($1, $2)`
@@ -28,38 +28,25 @@ func Test_UserSaver(t *testing.T) {
 		factoryFunc   FactoryFunc
 		expectedError error
 	}{
-		"Given a valid non-existing user, it will be registered in postgresql": {
+		"Given an existing valid user, it will be retrieved from postgresql": {
 			user: UserSchema{
-				ID:       "ba1dc545-90a0-4501-af99-8a5944ca38c4",
-				Name:     "Erik Sostenes Simon",
-				Password: "password",
+				ID:          "ba1dc545-90a0-4501-af99-8a5944ca38c4",
+				Name:        "Erik Sostenes Simon",
+				Password:    "password",
+				Permissions: 4,
 				Role: RoleSchema{
 					ID:   1,
 					Type: "USER",
 				},
 			},
 
-			factoryFunc: func() (ports.UserSaver, *sql.DB) {
-				conn := db.PostgreSQLInjector()
-				return NewUserSaver(conn), conn
-			},
-		},
-		"Given a valid existing user, it will not be registered in postgresql": {
-			user: UserSchema{
-				ID:       "ba1dc545-90a0-4501-af99-8a5944ca38c4",
-				Name:     "Erik Sostenes Simon",
-				Password: "password",
-				Role: RoleSchema{
-					ID:   1,
-					Type: "USER",
-				},
-			},
-			factoryFunc: func() (ports.UserSaver, *sql.DB) {
+			factoryFunc: func() (ports.UserGetter, *sql.DB) {
 				conn := db.PostgreSQLInjector()
 				userSchema := UserSchema{
-					ID:       "ba1dc545-90a0-4501-af99-8a5944ca38c4",
-					Name:     "Erik Sostenes Simon",
-					Password: "password",
+					ID:          "ba1dc545-90a0-4501-af99-8a5944ca38c4",
+					Name:        "Erik Sostenes Simon",
+					Password:    "password",
+					Permissions: 4,
 					Role: RoleSchema{
 						ID:   1,
 						Type: "USER",
@@ -75,9 +62,26 @@ func Test_UserSaver(t *testing.T) {
 				if err = saver.Save(context.TODO(), user); err != nil {
 					t.Fatal(err)
 				}
-				return saver, conn
+				return NewUserGetter(conn), conn
 			},
-			expectedError: domain.DuplicateUser,
+		},
+		"Given a non-existing valid user, it will not be retrieved from postgresql": {
+			user: UserSchema{
+				ID:          "ba1dc545-90a0-4501-af99-8a5944ca38c4",
+				Name:        "Erik Sostenes Simon",
+				Password:    "password",
+				Permissions: 4,
+				Role: RoleSchema{
+					ID:   1,
+					Type: "USER",
+				},
+			},
+
+			factoryFunc: func() (ports.UserGetter, *sql.DB) {
+				conn := db.PostgreSQLInjector()
+				return NewUserGetter(conn), conn
+			},
+			expectedError: domain.UserNotFound,
 		},
 	}
 
@@ -108,22 +112,23 @@ func Test_UserSaver(t *testing.T) {
 
 	for name, tsc := range tdt {
 		t.Run(name, func(t *testing.T) {
-			saver, conn := tsc.factoryFunc()
-			user, err := tsc.user.ToBusiness()
+			getter, conn := tsc.factoryFunc()
+			userSchema, err := tsc.user.ToBusiness()
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			t.Cleanup(func() {
-				if _, err := conn.ExecContext(ctx, sqlQueryDeleteUserRole, user.ID()); err != nil {
+				if _, err := conn.ExecContext(ctx, sqlQueryDeleteUserRole, userSchema.ID()); err != nil {
 					t.Fatal(err)
 				}
-				if _, err := conn.ExecContext(ctx, sqlQueryDeleteUser, user.ID()); err != nil {
+				if _, err := conn.ExecContext(ctx, sqlQueryDeleteUser, userSchema.ID()); err != nil {
 					t.Fatal(err)
 				}
 			})
 
-			err = saver.Save(ctx, user)
+			userId := domain.UserID(userSchema.ID())
+			_, _, err = getter.Get(ctx, &userId)
 			asUser := domain.UserError(0)
 
 			if errors.As(err, &asUser) {
