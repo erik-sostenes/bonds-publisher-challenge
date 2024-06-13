@@ -10,6 +10,18 @@ REST API that allows users to publish bonds for sale and buy bonds published by 
 
 To get started, follow the instructions on how to run the REST API
 
+##### Generate the public and private RSA keys
+
+```bash
+make keys
+```
+
+##### Load private rsa key
+
+```bash
+ export PRIVATE_KEY=$(base64 -w 0 private_key.pem)
+```
+
 ##### Load environment variables
 
 ```bash
@@ -25,6 +37,26 @@ make run
 ### how run test?
 
 Follow the instructions below to run the tests
+
+##### Generate the public and private RSA keys
+
+```bash
+make keys
+```
+
+##### Load private rsa key
+
+```bash
+ export PRIVATE_KEY=$(base64 -w 0 private_key.pem)
+```
+
+##### Load environment variables
+
+```bash
+export $(grep -v ^# .env.example)
+```
+
+##### Run it!
 
 ```bash
 make test
