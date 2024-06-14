@@ -2,7 +2,6 @@
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 
 import {
   Form,
@@ -25,7 +24,7 @@ import { saveUserRequest } from "@/requests/request";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { useCallback } from "react";
-import { formSchema, UserFormValues } from "@/validations/UserSchema";
+import { userFormSchema, UserFormValues } from "@/validations/UserSchema";
 
 import Link from "next/link";
 
@@ -33,7 +32,7 @@ export default function SignUp() {
   const { toast } = useToast();
 
   const form = useForm<UserFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(userFormSchema),
     defaultValues: {
       name: "",
       password: "",

@@ -18,7 +18,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
 export function BondsTable() {
-  const [addToUserBonds] = useUserBondsStore((state) => [state.addToUserBonds]);
+  const [addToUserBonds, userBonds] = useUserBondsStore((state) => [
+    state.addUserBonds,
+    state.userBonds,
+  ]);
 
   const userId = "580b87da-e389-4290-acbf-f6191467f401";
 
@@ -53,7 +56,7 @@ export function BondsTable() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {bonds?.map((bond) => (
+          {userBonds?.map((bond) => (
             <TableRow key={bond.id}>
               <TableCell className="font-medium">{bond.id}</TableCell>
               <TableCell>{bond.name}</TableCell>

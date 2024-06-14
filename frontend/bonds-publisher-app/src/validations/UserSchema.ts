@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-export type UserFormValues = z.infer<typeof formSchema>;
+export type UserFormValues = z.infer<typeof userFormSchema>;
 
-export const formSchema = z.object({
+export const userFormSchema = z.object({
   name: z
     .string()
     .min(10, {

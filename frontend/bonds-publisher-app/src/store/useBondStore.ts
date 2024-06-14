@@ -9,16 +9,43 @@ export interface State {
 }
 
 export interface Action {
-  addToUserBonds: (bonds: Bond[]) => void;
+  addUserBonds: (bonds: Bond[]) => void;
+  addNewUserBond: (bond: Bond) => void;
+  deleteUserBondByName: (name: string) => void;
 }
 
 export const useUserBondsStore = create<State & Action>()(
   persist(
     (set, get) => ({
       userBonds: [],
-      addToUserBonds: (bonds: Bond[]) => {
+      addUserBonds: (bonds: Bond[]) => {
         set({
           userBonds: bonds,
+        });
+      },
+      addNewUserBond: (bond: Bond) => {
+        const { userBonds } = get();
+
+        const newUserBonds = structuredClone(userBonds);
+        const bondIndex = newUserBonds.findIndex(
+          (value) => value.id === bond.id
+        );
+
+        if (bondIndex === -1) {
+          newUserBonds.push(bond);
+
+          set({
+            userBonds: newUserBonds,
+          });
+        }
+      },
+      deleteUserBondByName: (name: string) => {
+        const { userBonds } = get();
+
+        const newUserBonds = userBonds.filter((value) => value.name !== name);
+
+        set({
+          userBonds: newUserBonds,
         });
       },
     }),

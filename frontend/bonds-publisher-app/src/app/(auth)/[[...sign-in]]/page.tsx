@@ -24,14 +24,14 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { useCallback } from "react";
 import Link from "next/link";
-import { formSchema, UserFormValues } from "@/validations/UserSchema";
+import { userFormSchema, UserFormValues } from "@/validations/UserSchema";
 import { userAuthenticationRequest } from "@/requests/request";
 
 export default function SignIn() {
   const { toast } = useToast();
 
   const form = useForm<UserFormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(userFormSchema),
     defaultValues: {
       name: "",
       password: "",

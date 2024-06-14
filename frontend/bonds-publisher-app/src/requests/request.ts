@@ -1,4 +1,5 @@
 import { Bond } from "@/types/types";
+import { User } from "@/types/types";
 
 export const getUserBonds = async (userId: string): Promise<Bond[]> => {
   const response = await fetch(
@@ -32,7 +33,27 @@ const toCamelCase = (bond: any): Bond => {
   };
 };
 
-import { User } from "@/types/types";
+export const saveBond = async (bond: Bond) => {
+  const response = await fetch(`http://localhost:8080/api/v1/bonds/create`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: bond.id,
+      name: bond.name,
+      quantity_sale: bond.quantitySale,
+      sales_price: bond.salesPrice,
+      creator_user_id: bond.creatorUserId,
+      current_owner_id: bond.currentOwnerId,
+    }),
+  });
+
+  if (!response.ok) {
+    const body = await response.json();
+    throw new Error(body.message || "Failed to register bond");
+  }
+};
 
 export const userAuthenticationRequest = async (user: User) => {
   const username = encodeURIComponent(user.name);
@@ -56,7 +77,6 @@ export const userAuthenticationRequest = async (user: User) => {
 
   return body as string;
 };
-import { User } from "@/types/types";
 
 export const saveUserRequest = async (user: User) => {
   const response = await fetch(`http://localhost:8080/api/v1/register`, {
