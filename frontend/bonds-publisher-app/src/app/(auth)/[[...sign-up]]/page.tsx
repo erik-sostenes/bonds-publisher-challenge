@@ -13,32 +13,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+
+import { useToast } from "@/components/ui/use-toast";
+import { Toaster } from "@/components/ui/toaster";
+
+import { Button } from "@/components/ui/button";
 import { MaxWidthWrapper } from "@/components/MaxWidthWrapper";
+import { RoleEnum, User } from "@/types/types";
+import { useMutation } from "@tanstack/react-query";
+import { saveUserRequest } from "@/requests/CreateUser";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
-enum RoleEnum {
-  USER = "USER",
-}
+import { useCallback } from "react";
 
-interface Role {
-  id: number;
-  role: RoleEnum;
-}
-
-interface User {
-  id: number;
-  name: string;
-  password: string;
-  role: Role;
-}
-
-const roleSchema = z.object({
-  id: z.number(),
-  type: z.nativeEnum(RoleEnum),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+type CreateUserFormValues = z.infer<typeof formSchema>;
 
 const formSchema = z.object({
   name: z
@@ -57,29 +45,57 @@ const formSchema = z.object({
     .max(20, {
       message: "Password must not exceed 20 characters",
     }),
-  role: roleSchema,
 });
 
-export default function Page() {
-  const form = useForm<FormValues>({
+export default function SignUp() {
+  const { toast } = useToast();
+
+  const form = useForm<CreateUserFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       password: "",
-      role: {
-        id: 1,
-        type: RoleEnum.USER,
-      },
     },
   });
 
-  function onSubmit(values: FormValues) {
-    const user = { ...values, id: crypto.randomUUID() };
-    console.log(user);
-  }
+  const { mutate, isPending } = useMutation({
+    mutationFn: saveUserRequest,
+    onSuccess: async () => {
+      form.reset({
+        name: "",
+        password: "",
+      });
+
+      toast({
+        description: "Registered successfully 🎉",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        description: error.message,
+      });
+    },
+  });
+
+  const onSubmit = useCallback(
+    (values: CreateUserFormValues) => {
+      const user: User = {
+        id: crypto.randomUUID(),
+        role: {
+          id: 1,
+          type: RoleEnum.USER,
+        },
+        ...values,
+      };
+      mutate(user);
+    },
+    [mutate]
+  );
 
   return (
     <MaxWidthWrapper className="flex items-center flex-col">
+      <Toaster />
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
         Sign UP
       </h1>
@@ -104,7 +120,6 @@ export default function Page() {
               </FormItem>
             )}
           />
-
           <FormField
             control={form.control}
             name="password"
@@ -123,8 +138,10 @@ export default function Page() {
             variant="default"
             size="lg"
             className=" mt-5 h-12 text-base font-bold cursor-pointer w-full"
+            disabled={isPending}
           >
-            Register
+            {!isPending && "Register"}
+            {isPending && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
           </Button>
         </form>
       </Form>
