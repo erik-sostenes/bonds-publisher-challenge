@@ -18,14 +18,14 @@ import { Toaster } from "@/components/ui/toaster";
 
 import { Button } from "@/components/ui/button";
 import { MaxWidthWrapper } from "@/components/MaxWidthWrapper";
-import { RoleEnum, User } from "@/types/types";
+import { User } from "@/types/types";
 import { useMutation } from "@tanstack/react-query";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { useCallback } from "react";
 import Link from "next/link";
 import { formSchema, UserFormValues } from "@/validations/UserSchema";
-import { userAuthenticationRequest } from "@/requests/AuthenticateUser";
+import { userAuthenticationRequest } from "@/requests/request";
 
 export default function SignIn() {
   const { toast } = useToast();

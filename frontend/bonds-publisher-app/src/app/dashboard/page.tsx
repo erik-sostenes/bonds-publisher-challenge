@@ -1,7 +1,7 @@
 import { MaxWidthWrapper } from "@/components/MaxWidthWrapper";
 import { Navbar } from "@/components/Navbar";
 import { SheetCreateBond } from "@/components/SheetCreateBond";
-import { BondsTable } from "@/components/Table";
+import { BondsTable } from "@/components/BondsTable";
 
 export default function DashboardPage() {
   return (
