@@ -24,7 +24,7 @@ func NewUserGetter(conn *sql.DB) ports.UserGetter {
 	}
 }
 
-func (u *userGetter) Get(ctx context.Context, userId *domain.UserID) (user *domain.User, permissions uint8, err error) {
+func (u *userGetter) Get(ctx context.Context, username *domain.UserName) (user *domain.User, permissions uint8, err error) {
 	const sqlQueryGetUser = `
 		SELECT 
   			us.id,
@@ -37,11 +37,11 @@ func (u *userGetter) Get(ctx context.Context, userId *domain.UserID) (user *doma
   			INNER JOIN users_roles ur ON ur.user_id = us.id
 			INNER JOIN roles ro ON ro.id = ur.role_id
 			INNER JOIN permissions pe ON pe.role_id = ro.id
-		WHERE us.id = $1
+		WHERE us.name = $1
 		GROUP BY us.id, ro.id`
 
 	var userSchema UserSchema
-	err = u.conn.QueryRowContext(ctx, sqlQueryGetUser, userId.ID()).Scan(
+	err = u.conn.QueryRowContext(ctx, sqlQueryGetUser, username.Name()).Scan(
 		&userSchema.ID,
 		&userSchema.Name,
 		&userSchema.Password,
@@ -51,7 +51,7 @@ func (u *userGetter) Get(ctx context.Context, userId *domain.UserID) (user *doma
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, 0, fmt.Errorf("%w = User with id '%s' not found", domain.UserNotFound, userId.ID())
+			return nil, 0, fmt.Errorf("%w = User with name '%s' not found", domain.UserNotFound, username.Name())
 		}
 
 		slog.ErrorContext(ctx, "database error", "msg", err.Error())

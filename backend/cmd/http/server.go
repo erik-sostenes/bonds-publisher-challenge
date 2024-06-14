@@ -13,6 +13,7 @@ import (
 	"github.com/erik-sostenes/bonds-publisher-challenge/cmd/bootstrap"
 	"github.com/erik-sostenes/bonds-publisher-challenge/cmd/bootstrap/db"
 	"github.com/erik-sostenes/bonds-publisher-challenge/cmd/http/health"
+	"github.com/rs/cors"
 )
 
 const defaultPort = "8080"
@@ -25,7 +26,7 @@ func main() {
 	slog.SetDefault(logger)
 
 	port := strings.TrimSpace(os.Getenv("PORT"))
-	if port == "" {
+	if port != "" {
 		port = defaultPort
 	}
 
@@ -38,7 +39,7 @@ func main() {
 
 	svr := http.Server{
 		Addr:    ":" + port,
-		Handler: mux,
+		Handler: cors.AllowAll().Handler(mux),
 	}
 
 	go func() {

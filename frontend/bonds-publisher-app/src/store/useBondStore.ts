@@ -11,7 +11,6 @@ export interface State {
 export interface Action {
   addUserBonds: (bonds: Bond[]) => void;
   addNewUserBond: (bond: Bond) => void;
-  deleteUserBondByName: (name: string) => void;
 }
 
 export const useUserBondsStore = create<State & Action>()(
@@ -38,15 +37,6 @@ export const useUserBondsStore = create<State & Action>()(
             userBonds: newUserBonds,
           });
         }
-      },
-      deleteUserBondByName: (name: string) => {
-        const { userBonds } = get();
-
-        const newUserBonds = userBonds.filter((value) => value.name !== name);
-
-        set({
-          userBonds: newUserBonds,
-        });
       },
     }),
     { name: "user-bonds" }

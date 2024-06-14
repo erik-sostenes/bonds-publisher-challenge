@@ -4,9 +4,12 @@ import { buttonVariants } from "./ui/button";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+export const linkDashboard = "/dashboard";
+export const linkBuyBonds = "/buy-bonds";
+
 const items = [
-  { label: "Dashboard", link: "/dashboard" },
-  { label: "Buy", link: "/buy-bonds" },
+  { label: "Dashboard", link: linkDashboard },
+  { label: "Buy", link: linkDashboard + linkBuyBonds },
 ];
 
 export function Navbar() {

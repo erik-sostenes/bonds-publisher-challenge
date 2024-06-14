@@ -12,7 +12,7 @@ type (
 		Save(context.Context, *domain.User) error
 	}
 	UserGetter interface {
-		Get(context.Context, *domain.UserID) (*domain.User, uint8, error)
+		Get(context.Context, *domain.UserName) (*domain.User, uint8, error)
 	}
 )
 
@@ -26,7 +26,11 @@ type (
 		Generate(*domain.User, uint8) (string, error)
 	}
 
+	TokenValidator interface {
+		Validate(strToken string) (*domain.Authorization, error)
+	}
+
 	UserAuthorizer interface {
-		Authorize(context.Context, *domain.UserID, *domain.UserPassword) (string, error)
+		Authorize(context.Context, *domain.UserName, *domain.UserPassword) (string, error)
 	}
 )

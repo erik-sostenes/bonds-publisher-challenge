@@ -21,6 +21,26 @@ export const getUserBonds = async (userId: string): Promise<Bond[]> => {
   return body.map((bond: any) => toCamelCase(bond));
 };
 
+export const getBonds = async (userId: string): Promise<Bond[]> => {
+  const response = await fetch(
+    `http://localhost:8080/api/v1/bonds/all?current_owner_id=${userId}&limit=25&page=1`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  const body = await response.json();
+
+  if (!response.ok) {
+    throw new Error(body.message || "Failed to obtain user bonds");
+  }
+
+  return body.map((bond: any) => toCamelCase(bond));
+};
+
 const toCamelCase = (bond: any): Bond => {
   return {
     id: bond.id,
@@ -55,6 +75,32 @@ export const saveBond = async (bond: Bond) => {
   }
 };
 
+export const buyBond = async ({
+  bondId,
+  buyerUserId,
+}: {
+  bondId: string;
+  buyerUserId: string;
+}) => {
+  const paramBondId = encodeURIComponent(bondId);
+  const paramBuyerUserId = encodeURIComponent(buyerUserId);
+
+  const response = await fetch(
+    `http://localhost:8080/api/v1/bonds/buy/${paramBondId}/${paramBuyerUserId}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    const body = await response.json();
+    throw new Error(body.message || "Failed to buy bond");
+  }
+};
+
 export const userAuthenticationRequest = async (user: User) => {
   const username = encodeURIComponent(user.name);
   const userPassword = encodeURIComponent(user.password);
@@ -72,7 +118,7 @@ export const userAuthenticationRequest = async (user: User) => {
   const body = await response.json();
 
   if (!response.ok) {
-    throw new Error(body.message || "Failed to register user");
+    throw new Error(body.message || "Failed to authenticate user");
   }
 
   return body as string;

@@ -127,8 +127,8 @@ func Test_UserGetter(t *testing.T) {
 				}
 			})
 
-			userId := domain.UserID(userSchema.ID())
-			_, _, err = getter.Get(ctx, &userId)
+			username := domain.UserName(userSchema.Name())
+			_, _, err = getter.Get(ctx, &username)
 			asUser := domain.UserError(0)
 
 			if errors.As(err, &asUser) {

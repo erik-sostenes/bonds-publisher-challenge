@@ -8,39 +8,45 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useToast } from "@/components/ui/use-toast";
+
+import { usePathname } from "next/navigation";
 
 import { cn } from "@/lib/utils";
-import { getUserBonds } from "@/requests/request";
-import { useUserBondsStore } from "@/store/useBondStore";
 import { Bond } from "@/types/types";
+
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { linkBuyBonds, linkDashboard } from "./Navbar";
+import { Button } from "./ui/button";
 
-export function BondsTable() {
-  const [addToUserBonds, userBonds] = useUserBondsStore((state) => [
-    state.addUserBonds,
-    state.userBonds,
-  ]);
+interface Props {
+  isLoading: boolean;
+  isError: boolean;
+  error: Error | null;
+  bonds: Bond[] | undefined;
+  onSubmitCallback?: (bondId: string, buyerUserId: string) => void;
+  isPending?: boolean;
+}
 
-  const userId = "580b87da-e389-4290-acbf-f6191467f401";
+export function BondsTable({
+  isLoading,
+  isError,
+  error,
+  bonds,
+  onSubmitCallback,
+  isPending,
+}: Props) {
+  const buyerUserId = "580b87da-e389-4290-acbf-f6191467f401";
 
-  const {
-    data: bonds,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<Bond[], Error>({
-    queryKey: ["user-bonds", userId],
-    queryFn: () => getUserBonds(userId),
-  });
+  const pathname = usePathname();
+  const isBuyBond = pathname === linkDashboard + linkBuyBonds;
 
-  useEffect(() => {
-    addToUserBonds(bonds || []);
-  }, [addToUserBonds, bonds]);
-
+  // waiting to obtain the bonds
   if (isLoading) return <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />;
-  if (isError) return <span>Error: {error.message}</span>;
+  if (isError) return <span>Error: {error?.message}</span>;
+
+  // waiting for the bond to be successfully purchased
+  if (isPending) return <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />;
 
   return (
     <>
@@ -48,15 +54,16 @@ export function BondsTable() {
         <TableCaption>A list of your bonds</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Id</TableHead>
+            <TableHead>Id</TableHead>
             <TableHead>name</TableHead>
             <TableHead>Quantity Sale</TableHead>
             <TableHead className="text-right">Sales Price</TableHead>
             <TableHead>State</TableHead>
+            {isBuyBond ? <TableHead></TableHead> : <></>}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {userBonds?.map((bond) => (
+          {bonds?.map((bond) => (
             <TableRow key={bond.id}>
               <TableCell className="font-medium">{bond.id}</TableCell>
               <TableCell>{bond.name}</TableCell>
@@ -74,6 +81,24 @@ export function BondsTable() {
                   {bond.isBought ? "bought" : " available"}
                 </span>
               </TableCell>
+              {isBuyBond ? (
+                <TableCell>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    onClick={() =>
+                      onSubmitCallback && onSubmitCallback(bond.id, buyerUserId)
+                    }
+                  >
+                    {!isPending && "Buy"}
+                    {isPending && (
+                      <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                    )}
+                  </Button>
+                </TableCell>
+              ) : (
+                <></>
+              )}
             </TableRow>
           ))}
         </TableBody>

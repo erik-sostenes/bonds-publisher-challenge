@@ -5,19 +5,10 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/users/business/ports"
+	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/server/response"
 )
-
-func CORS(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
-		w.Header().Set("Access-Control-Expose-Headers", "Content-Length")
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-
-		next.ServeHTTP(w, r)
-	}
-}
 
 func Recovery(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -46,5 +37,28 @@ func Logger(next http.HandlerFunc) http.HandlerFunc {
 		)
 
 		next.ServeHTTP(w, r)
+	}
+}
+
+// IsAuthenticated middleware that validates the token for each http request
+// if the token is invalid the client is responded to with a StatusForbidden
+//
+// if the token is valid the requested HandlerFunc is executed
+func IsAuthenticated(validator ports.TokenValidator, next http.HandlerFunc) http.HandlerFunc {
+	if validator == nil {
+		panic("missing 'Token Validator' dependency")
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("token")
+
+		_, err := validator.Validate(token)
+		if !(err != nil) {
+			response.JSON(w, http.StatusForbidden, response.Response{
+				Message: err.Error(),
+			})
+			return
+		}
+
+		next(w, r)
 	}
 }

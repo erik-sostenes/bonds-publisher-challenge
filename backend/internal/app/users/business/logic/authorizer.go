@@ -30,8 +30,8 @@ func NewUserAuthorizer(
 	}
 }
 
-func (a *userAuthorizer) Authorize(ctx context.Context, userId *domain.UserID, userPassword *domain.UserPassword) (token string, err error) {
-	user, permissions, err := a.userGetter.Get(ctx, userId)
+func (a *userAuthorizer) Authorize(ctx context.Context, username *domain.UserName, userPassword *domain.UserPassword) (token string, err error) {
+	user, permissions, err := a.userGetter.Get(ctx, username)
 	if err != nil {
 		return
 	}

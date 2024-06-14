@@ -1,22 +1,39 @@
-import { MaxWidthWrapper } from "@/components/MaxWidthWrapper";
-import { Navbar } from "@/components/Navbar";
-import { SheetCreateBond } from "@/components/SheetCreateBond";
+"use client";
 import { BondsTable } from "@/components/BondsTable";
+import { getUserBonds } from "@/requests/request";
+import { useUserBondsStore } from "@/store/useBondStore";
+import { Bond } from "@/types/types";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
-  return (
-    <MaxWidthWrapper className="flex items-center flex-col justify-start h-screen gap-[5rem]">
-      <header className="w-full flex flex-col gap-[2rem] py-1">
-        <Navbar />
-        <div className="flex justify-between w-full items-center">
-          <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-            My Bonds
-          </h1>
-          <SheetCreateBond />
-        </div>
-      </header>
+  const userId = "580b87da-e389-4290-acbf-f6191467f401";
 
-      <BondsTable />
-    </MaxWidthWrapper>
+  const [addToUserBonds, userBonds] = useUserBondsStore((state) => [
+    state.addUserBonds,
+    state.userBonds,
+  ]);
+
+  const {
+    data: bonds,
+    isLoading,
+    isError,
+    error,
+  } = useQuery<Bond[], Error>({
+    queryKey: ["user-bonds", userId],
+    queryFn: () => getUserBonds(userId),
+  });
+
+  useEffect(() => {
+    addToUserBonds(bonds || []);
+  }, [addToUserBonds, bonds]);
+
+  return (
+    <BondsTable
+      isLoading={isLoading}
+      isError={isError}
+      error={error}
+      bonds={userBonds}
+    />
   );
 }

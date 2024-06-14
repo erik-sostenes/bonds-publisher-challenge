@@ -19,22 +19,22 @@ func NewUserMemory() userMemory {
 }
 
 func (u *userMemory) Save(_ context.Context, user *domain.User) error {
-	ok := u.set.Exist(user.ID())
+	ok := u.set.Exist(user.Name())
 	if ok {
-		return fmt.Errorf("%w = user with id '%s' already exists", domain.DuplicateUser, user.ID())
+		return fmt.Errorf("%w = user with username '%s' already exists", domain.DuplicateUser, user.Name())
 	}
 	newRole, _ := domain.NewRole(user.Role().ID(), user.Role().Type())
 	newUser, _ := domain.NewUser(user.ID(), user.Name(), user.Password(), newRole)
-	u.set.Add(user.ID(), newUser)
+	u.set.Add(user.Name(), newUser)
 
 	return nil
 }
 
-func (u *userMemory) Get(_ context.Context, userId *domain.UserID) (*domain.User, uint8, error) {
-	ok := u.set.Exist(userId.ID())
+func (u *userMemory) Get(_ context.Context, username *domain.UserName) (*domain.User, uint8, error) {
+	ok := u.set.Exist(username.Name())
 	if !ok {
-		return nil, 0, fmt.Errorf("%w = User with id '%s' not found", domain.UserNotFound, userId.ID())
+		return nil, 0, fmt.Errorf("%w = User with username '%s' not found", domain.UserNotFound, username.Name())
 	}
 
-	return u.set.GetByItem(userId.ID()), 1, nil
+	return u.set.GetByItem(username.Name()), 1, nil
 }

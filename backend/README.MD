@@ -22,6 +22,12 @@ make keys
  export PRIVATE_KEY=$(base64 -w 0 private_key.pem)
 ```
 
+##### Load public rsa key
+
+```bash
+ export PUBLIC_KEY=$(base64 -w 0 public_key.pem)
+```
+
 ##### Load environment variables
 
 ```bash
@@ -45,6 +51,12 @@ make keys
 ```
 
 ##### Load private rsa key
+
+```bash
+ export PRIVATE_KEY=$(base64 -w 0 private_key.pem)
+```
+
+##### Load public rsa key
 
 ```bash
  export PRIVATE_KEY=$(base64 -w 0 private_key.pem)

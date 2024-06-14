@@ -16,7 +16,7 @@ func GetAuthenticator(authorizer ports.UserAuthorizer) response.HttpHandlerFunc 
 	return func(w http.ResponseWriter, r *http.Request) (err error) {
 		ctx := r.Context()
 
-		userId, err := domain.UserID(r.URL.Query().Get("user_id")).Validate()
+		username, err := domain.UserName(r.URL.Query().Get("username")).Validate()
 		if err != nil {
 			return
 		}
@@ -26,7 +26,7 @@ func GetAuthenticator(authorizer ports.UserAuthorizer) response.HttpHandlerFunc 
 			return
 		}
 
-		token, err := authorizer.Authorize(ctx, userId, userPassword)
+		token, err := authorizer.Authorize(ctx, username, userPassword)
 		if err != nil {
 			return
 		}

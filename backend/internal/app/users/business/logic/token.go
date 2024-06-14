@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rsa"
 	"encoding/base64"
+	"errors"
 	"log/slog"
 	"time"
 
@@ -13,20 +14,12 @@ import (
 )
 
 type (
-	// RegisteredClaims is a structure representing JWT own claim types
-	RegisteredClaims = gojwt.RegisteredClaims
-
-	// Authorization is a structure representing the payload of a token
-	Authorization struct {
-		UserID,
-		UserName string
-		Role        map[string]any
-		Permissions uint
-		RegisteredClaims
-	}
-
 	tokenGenerator struct {
 		privateKey *rsa.PrivateKey
+	}
+
+	tokenValidator struct {
+		publicKey *rsa.PublicKey
 	}
 )
 
@@ -57,7 +50,7 @@ func (jwt tokenGenerator) Generate(user *domain.User, permissions uint8) (token 
 		"type": user.Role().Type(),
 	}
 
-	authorization := &Authorization{
+	authorization := &domain.Authorization{
 		UserID:      user.ID(),
 		UserName:    user.Name(),
 		Role:        role,
@@ -77,4 +70,41 @@ func (jwt tokenGenerator) Generate(user *domain.User, permissions uint8) (token 
 	}
 
 	return tokenSigned, nil
+}
+
+func NewTokenValidator(publicKeyBase64 string) ports.TokenValidator {
+	publicKeyPEM, err := base64.StdEncoding.DecodeString(publicKeyBase64)
+	if err != nil {
+		panic(err)
+	}
+
+	publicKey, err := gojwt.ParseRSAPublicKeyFromPEM(publicKeyPEM)
+	if err != nil {
+		panic(err)
+	}
+
+	return &tokenValidator{
+		publicKey: publicKey,
+	}
+}
+
+// Validate method that validates the token using the public key and the type of encryption method
+func (jwt *tokenValidator) Validate(strToken string) (*domain.Authorization, error) {
+	token, err := gojwt.Parse(strToken, func(t *gojwt.Token) (any, error) {
+		return jwt.publicKey, nil
+	})
+	if err != nil {
+		switch err {
+		case gojwt.ErrTokenMalformed:
+			return nil, errors.New("the provided JWT token is malformed")
+		case gojwt.ErrTokenSignatureInvalid:
+			return nil, errors.New("the signature of the JWT token is invalid")
+		case gojwt.ErrTokenExpired:
+			return nil, errors.New("the JWT token has expired")
+		default:
+			return nil, err
+		}
+	}
+
+	return token.Claims.(*domain.Authorization), nil
 }
