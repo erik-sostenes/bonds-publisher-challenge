@@ -23,7 +23,7 @@ func Test_GetAuthenticator(t *testing.T) {
 		"Given an existing valid user, a status code 200 with his token is expected": {
 			request: httptest.NewRequest(
 				http.MethodPost,
-				"/api/v1/login?user_id=ba1dc545-90a0-4501-af99-8a5944ca38c4&user_password=password",
+				"/api/v1/login?username=Erik&user_password=password",
 				http.NoBody,
 			),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
@@ -31,7 +31,7 @@ func Test_GetAuthenticator(t *testing.T) {
 
 				userRequest := UserRequest{
 					ID:       "ba1dc545-90a0-4501-af99-8a5944ca38c4",
-					Name:     "Erik Sostenes Simon",
+					Name:     "Erik",
 					Password: "password",
 					Role: RoleRequest{
 						ID:   1,
@@ -59,7 +59,7 @@ func Test_GetAuthenticator(t *testing.T) {
 		"Given an existing valid user sends an incorrect password, a 401 status code is expected": {
 			request: httptest.NewRequest(
 				http.MethodPost,
-				"/api/v1/login?user_id=ba1dc545-90a0-4501-af99-8a5944ca38c4&user_password=anyPassword",
+				"/api/v1/login?username=Erik&user_password=anyPassword",
 				http.NoBody,
 			),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
@@ -67,7 +67,7 @@ func Test_GetAuthenticator(t *testing.T) {
 
 				userRequest := UserRequest{
 					ID:       "ba1dc545-90a0-4501-af99-8a5944ca38c4",
-					Name:     "Erik Sostenes Simon",
+					Name:     "Erik",
 					Password: "password",
 					Role: RoleRequest{
 						ID:   1,
@@ -95,7 +95,7 @@ func Test_GetAuthenticator(t *testing.T) {
 		"Given a valid non-existent user, a 404 status code is expected": {
 			request: httptest.NewRequest(
 				http.MethodPost,
-				"/api/v1/login?user_id=ba1dc545-90a0-4501-af99-8a5944ca38c4&user_password=password",
+				"/api/v1/login?username=Erik&user_password=password",
 				http.NoBody,
 			),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
@@ -109,10 +109,10 @@ func Test_GetAuthenticator(t *testing.T) {
 			},
 			expectedStatusCode: http.StatusNotFound,
 		},
-		"Given a user with invalid id, a status code 400 is expected": {
+		"Given a user with invalid name, a status code 400 is expected": {
 			request: httptest.NewRequest(
 				http.MethodPost,
-				"/api/v1/login?user_id=ba1dc545-4501-af99-8a5944ca38c4&user_password=password",
+				"/api/v1/login?user_password=password",
 				http.NoBody,
 			),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {

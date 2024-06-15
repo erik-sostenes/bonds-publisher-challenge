@@ -79,7 +79,7 @@ func (b *bondsGetter) Get(ctx context.Context, bcOwnerId *domain.BondCurrentOwne
 	const sqlQueryGetUserBonds = `
 		SELECT *
 		FROM bonds
-		WHERE current_owner_id != $1
+		WHERE current_owner_id != $1 AND is_bought = FALSE
 		LIMIT $2
 		OFFSET $3
 	`

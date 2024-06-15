@@ -16,6 +16,20 @@ type (
 
 	// BondsRequest is a BondRequest type collection
 	BondsRequest []*BondRequest
+
+	// DTO
+	BanxicoRequest struct {
+		Bmx struct {
+			Series []struct {
+				IdSerie string `json:"idSerie"`
+				Titulo  string `json:"titulo"`
+				Datos   []struct {
+					Fecha string `json:"fecha"`
+					Dato  string `json:"dato"`
+				} `json:"datos"`
+			} `json:"series"`
+		} `json:"bmx"`
+	}
 )
 
 func (b BondRequest) ToBusiness() (*domain.Bond, error) {

@@ -65,6 +65,10 @@ jobs:
           echo "PUBLIC_KEY=$(base64 -w 0 ./backend/public_key.pem)" >> $GITHUB_ENV
         shell: bash
 
+      # Set BMX_TOKEN environment variable from secret
+      - name: Set BMX_TOKEN
+        run: echo "BMX_TOKEN=${{ secrets.BMX_TOKEN }}" >> $GITHUB_ENV
+
       # Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL
         run: |
@@ -90,10 +94,13 @@ jobs:
           DSN_POSTGRESQL: "postgres://postgres:postgres@localhost:5432/testdb?sslmode=disable"
           PRIVATE_KEY: ${{ env.PRIVATE_KEY }}
           PUBLIC_KEY: ${{ env.PUBLIC_KEY }}
+          BMX_TOKEN: ${{ env.BMX_TOKEN }}
         run: go test -v ./...
         working-directory: ./backend
 
       # Build app
       - name: Build
+        env:
+          BMX_TOKEN: ${{ env.BMX_TOKEN }}
         run: go build -v ./...
         working-directory: ./backend

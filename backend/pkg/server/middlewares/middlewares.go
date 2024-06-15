@@ -4,11 +4,28 @@ package middlewares
 import (
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/users/business/ports"
 	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/server/response"
+	"golang.org/x/time/rate"
 )
+
+func RateLimiter(next http.HandlerFunc) http.HandlerFunc {
+	limiter := rate.NewLimiter(rate.Every(time.Minute/1000), 1)
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		if !limiter.Allow() {
+			_ = response.JSON(w, http.StatusTooManyRequests, response.Response{
+				Message: "Rate limit exceeded",
+			})
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	}
+}
 
 func Recovery(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -49,11 +66,11 @@ func IsAuthenticated(validator ports.TokenValidator, next http.HandlerFunc) http
 		panic("missing 'Token Validator' dependency")
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
-		token := r.Header.Get("token")
-
-		_, err := validator.Validate(token)
-		if !(err != nil) {
-			response.JSON(w, http.StatusForbidden, response.Response{
+		strToken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+		_, err := validator.Validate(strToken)
+		// TODO: validate permissions
+		if err != nil {
+			_ = response.JSON(w, http.StatusForbidden, response.Response{
 				Message: err.Error(),
 			})
 			return

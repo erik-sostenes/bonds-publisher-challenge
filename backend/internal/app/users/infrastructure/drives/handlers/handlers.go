@@ -14,11 +14,11 @@ func UserHandler(
 ) {
 	mux.HandleFunc(
 		"POST /api/v1/register",
-		md.Recovery(md.Logger(UserErrorHandler(PostUserHandler(creator)))),
+		md.RateLimiter(md.Recovery(md.Logger(UserErrorHandler(PostUserHandler(creator))))),
 	)
 
 	mux.HandleFunc(
 		"GET /api/v1/login",
-		md.Recovery(md.Logger(UserErrorHandler(GetAuthenticator(authorizer)))),
+		md.RateLimiter(md.Recovery(md.Logger(UserErrorHandler(GetAuthenticator(authorizer))))),
 	)
 }

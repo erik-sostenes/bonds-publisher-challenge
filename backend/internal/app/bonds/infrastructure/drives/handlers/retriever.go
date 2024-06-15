@@ -48,7 +48,15 @@ func GetBondsPerUserHandler(retriever ports.UserBondsRetriever) response.HttpHan
 			return
 		}
 
-		return response.JSON(w, http.StatusOK, toRequest(bonds))
+		series, err := Baxico(ctx)
+		if err != nil {
+			return
+		}
+
+		return response.JSON(w, http.StatusOK, response.Response{
+			Data:     toRequest(bonds),
+			Metadata: series.Bmx,
+		})
 	}
 }
 
@@ -90,6 +98,14 @@ func GetBondsHandler(retriever ports.BondsRetriever) response.HttpHandlerFunc {
 			return
 		}
 
-		return response.JSON(w, http.StatusOK, toRequest(bonds))
+		series, err := Baxico(ctx)
+		if err != nil {
+			return
+		}
+
+		return response.JSON(w, http.StatusOK, response.Response{
+			Data:     toRequest(bonds),
+			Metadata: series.Bmx,
+		})
 	}
 }

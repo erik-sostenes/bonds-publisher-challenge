@@ -26,7 +26,7 @@ func main() {
 	slog.SetDefault(logger)
 
 	port := strings.TrimSpace(os.Getenv("PORT"))
-	if port != "" {
+	if port == "" {
 		port = defaultPort
 	}
 

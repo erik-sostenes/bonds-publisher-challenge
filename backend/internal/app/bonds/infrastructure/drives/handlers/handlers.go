@@ -19,21 +19,21 @@ func BondHandler(
 ) {
 	mux.HandleFunc(
 		"POST /api/v1/bonds/create",
-		md.Recovery(md.Logger(md.IsAuthenticated(tokenValidator, BondErrorHandler(PostBondHandler(creator))))),
+		md.RateLimiter(md.Recovery(md.Logger(md.IsAuthenticated(tokenValidator, BondErrorHandler(PostBondHandler(creator)))))),
 	)
 
 	mux.HandleFunc(
 		"PUT /api/v1/bonds/buy/{bond_id}/{buyer_user_id}",
-		md.Recovery(md.Logger(BondErrorHandler(PutBondBuyerHandler(buyer)))),
+		md.RateLimiter(md.Recovery(md.Logger(md.IsAuthenticated(tokenValidator, BondErrorHandler(PutBondBuyerHandler(buyer)))))),
 	)
 
 	mux.HandleFunc(
 		"GET /api/v1/bonds/user",
-		md.Recovery(md.Logger(BondErrorHandler(GetBondsPerUserHandler(usrBondsRetriever)))),
+		md.RateLimiter(md.Recovery(md.Logger(md.IsAuthenticated(tokenValidator, BondErrorHandler(GetBondsPerUserHandler(usrBondsRetriever)))))),
 	)
 
 	mux.HandleFunc(
 		"GET /api/v1/bonds/all",
-		md.Recovery(md.Logger(BondErrorHandler(GetBondsHandler(bondsRetriever)))),
+		md.RateLimiter(md.Recovery(md.Logger(md.IsAuthenticated(tokenValidator, BondErrorHandler(GetBondsHandler(bondsRetriever)))))),
 	)
 }

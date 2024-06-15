@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"os"
 	"strings"
 
 	_ "github.com/lib/pq"
@@ -47,7 +48,7 @@ func NewPostgresClient(config Configuration) (*sql.DB, error) {
 func PostgreSQLInjector() (db *sql.DB) {
 	config := Configuration{
 		Type: SQL,
-		DSN:  strings.TrimSpace("postgresql://eriksostenessimon:Z7LJxvwz2Tan@ep-falling-cherry-36249690.us-east-2.aws.neon.tech/order_book?sslmode=require"),
+		DSN:  strings.TrimSpace(os.Getenv("DSN_POSTGRESQL")),
 	}
 
 	db, err := NewPostgresClient(config)

@@ -106,5 +106,14 @@ func (jwt *tokenValidator) Validate(strToken string) (*domain.Authorization, err
 		}
 	}
 
-	return token.Claims.(*domain.Authorization), nil
+	if claims, ok := token.Claims.(gojwt.MapClaims); ok && token.Valid {
+		auth := &domain.Authorization{
+			UserID:      claims["UserID"].(string),
+			UserName:    claims["UserName"].(string),
+			Role:        claims["Role"].(map[string]interface{}),
+			Permissions: uint(claims["Permissions"].(float64)),
+		}
+		return auth, nil
+	}
+	return nil, nil
 }

@@ -45,7 +45,7 @@ func Test_UserBondsGetter(t *testing.T) {
 					Name:           "Global Secure Corporate Bond 2024",
 					QuantitySale:   1,
 					SalesPrice:     400.0000,
-					IsBought:       true,
+					IsBought:       false,
 					CreatorUserId:  "580b87da-e389-4290-acbf-f6191467f401",
 					CurrentOwnerId: "580b87da-e389-4290-acbf-f6191467f401",
 				}
@@ -292,7 +292,7 @@ func Test_BondsGetter(t *testing.T) {
 				page:  1,
 				limit: 25,
 			},
-			numberBondsExpected: 1,
+			numberBondsExpected: 0,
 		},
 	}
 

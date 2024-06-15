@@ -11,8 +11,10 @@ type (
 	HttpHandlerFunc func(w http.ResponseWriter, r *http.Request) error
 
 	Response struct {
-		Code    string `json:"code"`
-		Message string `json:"message"`
+		Code     string `json:"code"`
+		Message  string `json:"message"`
+		Data     any    `json:"data"`
+		Metadata any    `json:"metadata"`
 	}
 )
 
