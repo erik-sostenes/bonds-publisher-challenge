@@ -1,36 +1,61 @@
-import { Bond } from "@/types/types";
+import { Banxico, Bond, BondsRequest } from "@/types/types";
 import { User } from "@/types/types";
 
-export const getUserBonds = async (userId: string): Promise<Bond[]> => {
+export const getUserBonds = async ({
+  userId,
+  token,
+}: {
+  userId: string;
+  token: string;
+}): Promise<BondsRequest> => {
   const response = await fetch(
     `http://localhost:8080/api/v1/bonds/user?current_owner_id=${userId}&limit=25&page=1`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     }
   );
+
+  if (response.status === 403) {
+    throw new ForbiddenError("Your session has expired. Please log in again.");
+  }
 
   const body = await response.json();
 
   if (!response.ok) {
     throw new Error(body.message || "Failed to obtain user bonds");
   }
+  const { data, metadata } = body;
+  const bonds = data.map((bond: any) => toCamelCase(bond)) as Bond[];
+  const banxico = metadata as Banxico;
 
-  return body.map((bond: any) => toCamelCase(bond));
+  return { bonds, banxico } as BondsRequest;
 };
 
-export const getBonds = async (userId: string): Promise<Bond[]> => {
+export const getBonds = async ({
+  userId,
+  token,
+}: {
+  userId: string;
+  token: string;
+}): Promise<BondsRequest> => {
   const response = await fetch(
     `http://localhost:8080/api/v1/bonds/all?current_owner_id=${userId}&limit=25&page=1`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     }
   );
+
+  if (response.status === 403) {
+    throw new ForbiddenError("Your session has expired. Please log in again.");
+  }
 
   const body = await response.json();
 
@@ -38,7 +63,11 @@ export const getBonds = async (userId: string): Promise<Bond[]> => {
     throw new Error(body.message || "Failed to obtain user bonds");
   }
 
-  return body.map((bond: any) => toCamelCase(bond));
+  const { data, metadata } = body;
+  const bonds = data.map((bond: any) => toCamelCase(bond)) as Bond[];
+  const banxico = metadata as Banxico;
+
+  return { bonds, banxico } as BondsRequest;
 };
 
 const toCamelCase = (bond: any): Bond => {
@@ -53,11 +82,18 @@ const toCamelCase = (bond: any): Bond => {
   };
 };
 
-export const saveBond = async (bond: Bond) => {
+export const saveBond = async ({
+  bond,
+  token,
+}: {
+  bond: Bond;
+  token: string;
+}) => {
   const response = await fetch(`http://localhost:8080/api/v1/bonds/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       id: bond.id,
@@ -69,6 +105,9 @@ export const saveBond = async (bond: Bond) => {
     }),
   });
 
+  if (response.status === 403) {
+    throw new ForbiddenError("Your session has expired. Please log in again.");
+  }
   if (!response.ok) {
     const body = await response.json();
     throw new Error(body.message || "Failed to register bond");
@@ -78,9 +117,11 @@ export const saveBond = async (bond: Bond) => {
 export const buyBond = async ({
   bondId,
   buyerUserId,
+  token,
 }: {
   bondId: string;
   buyerUserId: string;
+  token: string;
 }) => {
   const paramBondId = encodeURIComponent(bondId);
   const paramBuyerUserId = encodeURIComponent(buyerUserId);
@@ -91,9 +132,14 @@ export const buyBond = async ({
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
     }
   );
+
+  if (response.status === 403) {
+    throw new ForbiddenError("Your session has expired. Please log in again.");
+  }
 
   if (!response.ok) {
     const body = await response.json();
@@ -101,7 +147,7 @@ export const buyBond = async ({
   }
 };
 
-export const userAuthenticationRequest = async (user: User) => {
+export const userAuthentication = async (user: User) => {
   const username = encodeURIComponent(user.name);
   const userPassword = encodeURIComponent(user.password);
 
@@ -121,10 +167,10 @@ export const userAuthenticationRequest = async (user: User) => {
     throw new Error(body.message || "Failed to authenticate user");
   }
 
-  return body as string;
+  return body.token as string;
 };
 
-export const saveUserRequest = async (user: User) => {
+export const saveUser = async (user: User) => {
   const response = await fetch(`http://localhost:8080/api/v1/register`, {
     method: "POST",
     headers: {
@@ -146,3 +192,11 @@ export const saveUserRequest = async (user: User) => {
     throw new Error(body.message || "Failed to register user");
   }
 };
+
+// customize error
+export class ForbiddenError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ForbiddenError";
+  }
+}

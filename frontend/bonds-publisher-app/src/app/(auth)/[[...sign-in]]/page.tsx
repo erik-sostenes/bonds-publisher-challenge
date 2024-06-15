@@ -18,17 +18,37 @@ import { Toaster } from "@/components/ui/toaster";
 
 import { Button } from "@/components/ui/button";
 import { MaxWidthWrapper } from "@/components/MaxWidthWrapper";
-import { User } from "@/types/types";
+import { Role, User, UserWithSession } from "@/types/types";
 import { useMutation } from "@tanstack/react-query";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { useCallback } from "react";
 import Link from "next/link";
 import { userFormSchema, UserFormValues } from "@/validations/UserSchema";
-import { userAuthenticationRequest } from "@/requests/request";
+import { userAuthentication } from "@/requests/request";
+
+import { jwtDecode } from "jwt-decode";
+import { useSessionUserStore } from "@/store/useUserStore";
+
+import { useRouter } from "next/navigation";
+import { linkDashboard } from "@/components/Navbar";
+
+interface DecodedToken {
+  Permissions: number;
+  Role: Role;
+  UserID: string;
+  UserName: string;
+  exp: number;
+  iss: string;
+}
 
 export default function SignIn() {
+  const router = useRouter();
   const { toast } = useToast();
+
+  const [saveSessionUser] = useSessionUserStore((state) => [
+    state.saveSessionUser,
+  ]);
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
@@ -39,14 +59,31 @@ export default function SignIn() {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: userAuthenticationRequest,
-    onSuccess: async (data) => {
+    mutationFn: userAuthentication,
+    onSuccess: async (token) => {
       form.reset({
         name: "",
         password: "",
       });
 
-      // TODO: decoding token
+      const { UserID, UserName, Role, Permissions, exp, iss } = jwtDecode(
+        token
+      ) as DecodedToken;
+
+      saveSessionUser({
+        id: UserID,
+        name: UserName,
+        role: {
+          id: Role.id,
+          type: Role.type,
+        },
+        permissions: Permissions,
+        exp: exp,
+        iss: iss,
+        session: token,
+      } as UserWithSession);
+
+      router.push(linkDashboard);
     },
     onError: (error) => {
       toast({

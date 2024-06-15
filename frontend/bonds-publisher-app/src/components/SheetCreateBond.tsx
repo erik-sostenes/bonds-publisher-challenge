@@ -19,41 +19,55 @@ import {
 
 import { useToast } from "@/components/ui/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 
 import { bondFormSchema, BondFormValues } from "@/validations/BondSchema";
 
 import { Bond } from "@/types/types";
-import { saveBond } from "@/requests/request";
-import { useUserBondsStore } from "@/store/useBondStore";
+import { ForbiddenError, saveBond } from "@/requests/request";
+import { useSessionUserStore } from "@/store/useUserStore";
 
 export function SheetCreateBond() {
-  const userId = "580b87da-e389-4290-acbf-f6191467f401";
+  const [userWithSession] = useSessionUserStore((state) => [
+    state.userWithSession,
+  ]);
 
   return (
     <Sheet>
-      <SheetTrigger>Create Bond</SheetTrigger>
+      <SheetTrigger className={buttonVariants({ variant: "secondary" })}>
+        Create Bond
+      </SheetTrigger>
       <SheetContent className="w-full sm:w-[550px]">
         <SheetHeader>
           <SheetTitle>Create Bond</SheetTitle>
         </SheetHeader>
-        <CreateBond userId={userId}></CreateBond>
+        <CreateBond
+          userId={userWithSession.id}
+          token={userWithSession.session}
+        ></CreateBond>
       </SheetContent>
     </Sheet>
   );
 }
 
-export function CreateBond({ userId }: { userId: string }) {
+export function CreateBond({
+  userId,
+  token,
+}: {
+  userId: string;
+  token: string;
+}) {
   const currentNewUBond = useRef<Bond>();
-  const [addNewUserBond] = useUserBondsStore((state) => [state.addNewUserBond]);
-
+  const queryClient = useQueryClient();
+  const router = useRouter();
   const { toast } = useToast();
 
   const form = useForm<BondFormValues>({
@@ -68,7 +82,6 @@ export function CreateBond({ userId }: { userId: string }) {
   const { mutate, isPending } = useMutation({
     mutationFn: saveBond,
     onSuccess: async () => {
-      addNewUserBond(currentNewUBond.current || ({} as Bond));
       form.reset({
         name: "",
         quantitySale: 0,
@@ -78,13 +91,29 @@ export function CreateBond({ userId }: { userId: string }) {
       toast({
         description: "Registered successfully 🎉",
       });
+      // refresh queries
+      queryClient.invalidateQueries({
+        queryKey: ["user-bonds"],
+      });
     },
     onError: (error) => {
       currentNewUBond.current = {} as Bond;
-      toast({
-        variant: "destructive",
-        description: error.message,
-      });
+
+      if (error instanceof ForbiddenError) {
+        // Redirect to login or some other page
+        setTimeout(() => {
+          router.push("/");
+        }, 4000);
+        toast({
+          variant: "destructive",
+          description: "your session has expired",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          description: error?.message,
+        });
+      }
     },
   });
 
@@ -100,9 +129,9 @@ export function CreateBond({ userId }: { userId: string }) {
 
       currentNewUBond.current = bond as Bond;
 
-      mutate(bond as Bond);
+      mutate({ bond: bond as Bond, token: token });
     },
-    [mutate, currentNewUBond, userId]
+    [mutate, currentNewUBond, userId, token]
   );
 
   return (

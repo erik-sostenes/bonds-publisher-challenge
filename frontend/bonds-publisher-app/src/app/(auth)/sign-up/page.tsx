@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { MaxWidthWrapper } from "@/components/MaxWidthWrapper";
 import { RoleEnum, User } from "@/types/types";
 import { useMutation } from "@tanstack/react-query";
-import { saveUserRequest } from "@/requests/request";
+import { saveUser } from "@/requests/request";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { useCallback } from "react";
@@ -40,7 +40,7 @@ export default function SignUp() {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: saveUserRequest,
+    mutationFn: saveUser,
     onSuccess: async () => {
       form.reset({
         name: "",

@@ -3,26 +3,32 @@ import { BondsTable } from "@/components/BondsTable";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/components/ui/use-toast";
 
-import { buyBond, getBonds } from "@/requests/request";
-import { Bond } from "@/types/types";
+import { buyBond, ForbiddenError, getBonds } from "@/requests/request";
+import { useSessionUserStore } from "@/store/useUserStore";
+import { BondsRequest } from "@/types/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 
+import { useRouter } from "next/navigation";
+
 export default function BuyBondsPage() {
   const { toast } = useToast();
-  const userId = "580b87da-e389-4290-acbf-f6191467f401";
+  const [userWithSession] = useSessionUserStore((state) => [
+    state.userWithSession,
+  ]);
+
+  const router = useRouter();
 
   const queryClient = useQueryClient();
 
   // get bonds
-  const {
-    data: bonds,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<Bond[], Error>({
-    queryKey: ["bonds", userId],
-    queryFn: () => getBonds(userId),
+  const { data, isLoading, isError, error } = useQuery<BondsRequest, Error>({
+    queryKey: ["bonds", userWithSession.id, userWithSession.session],
+    queryFn: () =>
+      getBonds({
+        userId: userWithSession.id,
+        token: userWithSession.session,
+      }),
   });
 
   // bought bonds
@@ -34,18 +40,32 @@ export default function BuyBondsPage() {
       });
 
       // refresh queries
-      queryClient.invalidateQueries({ queryKey: ["bonds", userId] });
+      queryClient.invalidateQueries({
+        queryKey: ["bonds", userWithSession.id, userWithSession.session],
+      });
     },
     onError: (error) => {
-      toast({
-        variant: "destructive",
-        description: error.message,
-      });
+      if (error instanceof ForbiddenError) {
+        // Redirect to login or some other page
+        setTimeout(() => {
+          router.push("/");
+        }, 4000);
+        toast({
+          variant: "destructive",
+          description: "your session has expired",
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          description: error.message,
+        });
+      }
     },
   });
 
   const onSubmit = useCallback(
-    (bondId: string, buyerUserId: string) => mutate({ bondId, buyerUserId }),
+    (bondId: string, buyerUserId: string, token: string) =>
+      mutate({ bondId, buyerUserId, token }),
     [mutate]
   );
 
@@ -56,7 +76,8 @@ export default function BuyBondsPage() {
         isLoading={isLoading}
         isError={isError}
         error={error}
-        bonds={bonds}
+        bonds={data?.bonds}
+        banxico={data?.banxico}
         isPending={isPending}
         onSubmitCallback={onSubmit}
       />

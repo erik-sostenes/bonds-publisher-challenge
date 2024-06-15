@@ -14,6 +14,13 @@ export interface User {
   role: Role;
 }
 
+export interface UserWithSession extends User {
+  session: string;
+  permissions: number;
+  exp: number;
+  iss: string;
+}
+
 export interface Bond {
   id: string;
   name: string;
@@ -22,4 +29,24 @@ export interface Bond {
   isBought: boolean;
   creatorUserId: string;
   currentOwnerId: string;
+}
+
+export interface Banxico {
+  series: Series[];
+}
+
+interface Series {
+  idSerie: string;
+  titulo: string;
+  datos: Datos[];
+}
+
+interface Datos {
+  fecha: string;
+  dato: string;
+}
+
+export interface BondsRequest {
+  bonds: Bond[];
+  banxico: Banxico;
 }

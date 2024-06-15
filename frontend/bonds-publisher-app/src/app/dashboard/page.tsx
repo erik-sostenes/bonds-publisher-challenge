@@ -1,39 +1,31 @@
 "use client";
 import { BondsTable } from "@/components/BondsTable";
 import { getUserBonds } from "@/requests/request";
-import { useUserBondsStore } from "@/store/useBondStore";
-import { Bond } from "@/types/types";
+import { useSessionUserStore } from "@/store/useUserStore";
+import { Bond, BondsRequest } from "@/types/types";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 
 export default function DashboardPage() {
-  const userId = "580b87da-e389-4290-acbf-f6191467f401";
-
-  const [addToUserBonds, userBonds] = useUserBondsStore((state) => [
-    state.addUserBonds,
-    state.userBonds,
+  const [userWithSession] = useSessionUserStore((state) => [
+    state.userWithSession,
   ]);
 
-  const {
-    data: bonds,
-    isLoading,
-    isError,
-    error,
-  } = useQuery<Bond[], Error>({
-    queryKey: ["user-bonds", userId],
-    queryFn: () => getUserBonds(userId),
+  const { data, isLoading, isError, error } = useQuery<BondsRequest, Error>({
+    queryKey: ["user-bonds"],
+    queryFn: () =>
+      getUserBonds({
+        userId: userWithSession.id,
+        token: userWithSession.session,
+      }),
   });
-
-  useEffect(() => {
-    addToUserBonds(bonds || []);
-  }, [addToUserBonds, bonds]);
 
   return (
     <BondsTable
       isLoading={isLoading}
       isError={isError}
       error={error}
-      bonds={userBonds}
+      bonds={data?.bonds}
+      banxico={data?.banxico}
     />
   );
 }
