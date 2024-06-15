@@ -6,9 +6,27 @@ REST API that allows users to publish bonds for sale and buy bonds published by 
 
 - [API documentation (Swagger)](docs/swagger.yaml)
 
+#### Get token banxico
+
+[banxico](https://www.banxico.org.mx/SieAPIRest/service/v1/token)
+
 ### how to execute the project?
 
 To get started, follow the instructions on how to run the REST API
+
+###### recomendations (optional)
+
+Verify that you do not have any docker image running
+
+```bash
+docker stop $(docker ps -q)
+```
+
+##### Build app
+
+```bash
+docker-compose up --build
+```
 
 ##### Generate the public and private RSA keys
 

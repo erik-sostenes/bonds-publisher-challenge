@@ -1,6 +1,7 @@
 import { Banxico, Bond, BondsRequest } from "@/types/types";
 import { User } from "@/types/types";
 
+const API = "http://localhost:8080";
 export const getUserBonds = async ({
   userId,
   token,
@@ -9,7 +10,7 @@ export const getUserBonds = async ({
   token: string;
 }): Promise<BondsRequest> => {
   const response = await fetch(
-    `http://localhost:8080/api/v1/bonds/user?current_owner_id=${userId}&limit=25&page=1`,
+    `${API}/api/v1/bonds/user?current_owner_id=${userId}&limit=25&page=1`,
     {
       method: "GET",
       headers: {
@@ -43,7 +44,7 @@ export const getBonds = async ({
   token: string;
 }): Promise<BondsRequest> => {
   const response = await fetch(
-    `http://localhost:8080/api/v1/bonds/all?current_owner_id=${userId}&limit=25&page=1`,
+    `${API}/api/v1/bonds/all?current_owner_id=${userId}&limit=25&page=1`,
     {
       method: "GET",
       headers: {
@@ -89,7 +90,7 @@ export const saveBond = async ({
   bond: Bond;
   token: string;
 }) => {
-  const response = await fetch(`http://localhost:8080/api/v1/bonds/create`, {
+  const response = await fetch(`${API}/api/v1/bonds/create`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -127,7 +128,7 @@ export const buyBond = async ({
   const paramBuyerUserId = encodeURIComponent(buyerUserId);
 
   const response = await fetch(
-    `http://localhost:8080/api/v1/bonds/buy/${paramBondId}/${paramBuyerUserId}`,
+    `${API}/api/v1/bonds/buy/${paramBondId}/${paramBuyerUserId}`,
     {
       method: "PUT",
       headers: {
@@ -152,7 +153,7 @@ export const userAuthentication = async (user: User) => {
   const userPassword = encodeURIComponent(user.password);
 
   const response = await fetch(
-    `http://localhost:8080/api/v1/login?username=${username}&user_password=${userPassword}`,
+    `${API}/api/v1/login?username=${username}&user_password=${userPassword}`,
     {
       method: "GET",
       headers: {
@@ -171,7 +172,7 @@ export const userAuthentication = async (user: User) => {
 };
 
 export const saveUser = async (user: User) => {
-  const response = await fetch(`http://localhost:8080/api/v1/register`, {
+  const response = await fetch(`${API}/api/v1/register`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

@@ -49,3 +49,7 @@ CREATE TABLE bonds (
     CONSTRAINT fk_creator_user_user FOREIGN KEY (creator_user_id) REFERENCES users (id) ON DELETE CASCADE,
     CONSTRAINT fk_current_owner_user FOREIGN KEY (current_owner_id) REFERENCES users (id) ON DELETE CASCADE
 );
+
+-- inserts
+INSERT INTO roles(id, type) VALUES(1, 'USER');
+INSERT INTO permissions(permission, role_id) VALUES('1', 1),( '8', 1)

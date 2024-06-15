@@ -7,5 +7,8 @@ keys:
 test:
 	go test -v ./...\
 
+build:
+	docker-compose up --build
+
 run: server
 	./build
