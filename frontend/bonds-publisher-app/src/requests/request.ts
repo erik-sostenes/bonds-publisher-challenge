@@ -1,7 +1,8 @@
 import { Banxico, Bond, BondsRequest } from "@/types/types";
 import { User } from "@/types/types";
 
-const API = "http://localhost:8080";
+const API = process.env.API_URL  || "http://localhost:8080";
+
 export const getUserBonds = async ({
   userId,
   token,
