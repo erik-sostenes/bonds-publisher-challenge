@@ -18,7 +18,7 @@ func RateLimiter(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !limiter.Allow() {
 			_ = response.JSON(w, http.StatusTooManyRequests, response.Response{
-				Message: "Rate limit exceeded",
+				Message: "rate limit exceeded",
 			})
 			return
 		}

@@ -130,7 +130,10 @@ func Test_UserSaver(t *testing.T) {
 				if !errors.Is(asUser, tsc.expectedError) {
 					t.Errorf("'%v' error was expected, but '%s' error was obtained", tsc.expectedError, asUser)
 				}
-			} else if err != nil {
+				t.SkipNow()
+			}
+
+			if err != nil {
 				t.Errorf("'%v' error was expected, but '%s' error was obtained", tsc.expectedError, err)
 			}
 		})

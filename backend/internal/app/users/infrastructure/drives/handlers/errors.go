@@ -43,7 +43,7 @@ func UserErrorHandler(apiFunc response.HttpHandlerFunc) http.HandlerFunc {
 			asRole := domain.RoleError(0)
 			if errors.As(err, &asRole) {
 				message := response.Response{
-					Code:    asUser.Error(),
+					Code:    asRole.Error(),
 					Message: err.Error(),
 				}
 
@@ -58,6 +58,9 @@ func UserErrorHandler(apiFunc response.HttpHandlerFunc) http.HandlerFunc {
 
 				}
 			}
+
+			_ = response.JSON(w, http.StatusInternalServerError, "an error has occurred")
+			return
 		}
 	}
 }

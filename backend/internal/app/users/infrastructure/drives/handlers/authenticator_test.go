@@ -22,7 +22,7 @@ func Test_GetAuthenticator(t *testing.T) {
 	}{
 		"Given an existing valid user, a status code 200 with his token is expected": {
 			request: httptest.NewRequest(
-				http.MethodPost,
+				http.MethodGet,
 				"/api/v1/login?username=Erik&user_password=password",
 				http.NoBody,
 			),
@@ -58,7 +58,7 @@ func Test_GetAuthenticator(t *testing.T) {
 		},
 		"Given an existing valid user sends an incorrect password, a 401 status code is expected": {
 			request: httptest.NewRequest(
-				http.MethodPost,
+				http.MethodGet,
 				"/api/v1/login?username=Erik&user_password=anyPassword",
 				http.NoBody,
 			),
@@ -94,7 +94,7 @@ func Test_GetAuthenticator(t *testing.T) {
 		},
 		"Given a valid non-existent user, a 404 status code is expected": {
 			request: httptest.NewRequest(
-				http.MethodPost,
+				http.MethodGet,
 				"/api/v1/login?username=Erik&user_password=password",
 				http.NoBody,
 			),
@@ -111,7 +111,7 @@ func Test_GetAuthenticator(t *testing.T) {
 		},
 		"Given a user with invalid name, a status code 400 is expected": {
 			request: httptest.NewRequest(
-				http.MethodPost,
+				http.MethodGet,
 				"/api/v1/login?user_password=password",
 				http.NoBody,
 			),
