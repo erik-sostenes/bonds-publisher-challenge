@@ -43,7 +43,7 @@ func BondErrorHandler(apiFunc response.HttpHandlerFunc) http.HandlerFunc {
 			asUser := domain.UserError(0)
 			if errors.As(err, &asUser) {
 				message := response.Response{
-					Code:    asBond.Error(),
+					Code:    asUser.Error(),
 					Message: err.Error(),
 				}
 
@@ -60,7 +60,7 @@ func BondErrorHandler(apiFunc response.HttpHandlerFunc) http.HandlerFunc {
 			asFilter := filter.FilterError(0)
 			if errors.As(err, &asFilter) {
 				message := response.Response{
-					Code:    asBond.Error(),
+					Code:    asFilter.Error(),
 					Message: err.Error(),
 				}
 
@@ -73,6 +73,9 @@ func BondErrorHandler(apiFunc response.HttpHandlerFunc) http.HandlerFunc {
 					return
 				}
 			}
+
+			_ = response.JSON(w, http.StatusInternalServerError, "an error has occurred")
+			return
 		}
 	}
 }

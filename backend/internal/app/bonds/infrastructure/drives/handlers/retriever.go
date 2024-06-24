@@ -6,6 +6,7 @@ import (
 
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/business/domain"
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/business/ports"
+	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/infrastructure/driven/banxico"
 	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/filter"
 	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/server/response"
 )
@@ -43,19 +44,14 @@ func GetBondsPerUserHandler(retriever ports.UserBondsRetriever) response.HttpHan
 			return
 		}
 
-		bonds, err := retriever.Retrieve(ctx, bondCurrentOwnerId, fltr)
-		if err != nil {
-			return
-		}
-
-		series, err := Baxico(ctx)
+		bonds, bxico, err := retriever.Retrieve(ctx, bondCurrentOwnerId, fltr)
 		if err != nil {
 			return
 		}
 
 		return response.JSON(w, http.StatusOK, response.Response{
 			Data:     toRequest(bonds),
-			Metadata: series.Bmx,
+			Metadata: banxico.BanxicoRequest(*bxico).Bmx,
 		})
 	}
 }
@@ -93,19 +89,14 @@ func GetBondsHandler(retriever ports.BondsRetriever) response.HttpHandlerFunc {
 			return
 		}
 
-		bonds, err := retriever.Retrieve(ctx, bondCurrentOwnerId, fltr)
-		if err != nil {
-			return
-		}
-
-		series, err := Baxico(ctx)
+		bonds, bxico, err := retriever.Retrieve(ctx, bondCurrentOwnerId, fltr)
 		if err != nil {
 			return
 		}
 
 		return response.JSON(w, http.StatusOK, response.Response{
 			Data:     toRequest(bonds),
-			Metadata: series.Bmx,
+			Metadata: banxico.BanxicoRequest(*bxico).Bmx,
 		})
 	}
 }

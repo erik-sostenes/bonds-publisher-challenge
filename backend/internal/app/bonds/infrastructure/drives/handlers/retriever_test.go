@@ -4,9 +4,11 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/business/logic"
+	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/infrastructure/driven/banxico"
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/infrastructure/driven/memory"
 	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/server/response"
 )
@@ -40,7 +42,8 @@ func Test_GetBondsPerUserHandler(t *testing.T) {
 				// save in memory a new Bond
 				_ = memo.Save(context.Background(), bond)
 
-				getter := logic.NewUserBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsPerUserHandler(getter), nil
 			},
@@ -50,7 +53,8 @@ func Test_GetBondsPerUserHandler(t *testing.T) {
 			request: httptest.NewRequest(http.MethodGet, "/api/v1/bonds/user?current_owner_id=580b87da-e389-4290&limit=10&page=1", http.NoBody),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				getter := logic.NewUserBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsPerUserHandler(getter), nil
 			},
@@ -60,7 +64,8 @@ func Test_GetBondsPerUserHandler(t *testing.T) {
 			request: httptest.NewRequest(http.MethodGet, "/api/v1/bonds/user?current_owner_id=580b87da-e389-4290-acbf-f6191467f401&limit=-1&page=1", http.NoBody),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				getter := logic.NewUserBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsPerUserHandler(getter), nil
 			},
@@ -70,7 +75,8 @@ func Test_GetBondsPerUserHandler(t *testing.T) {
 			request: httptest.NewRequest(http.MethodGet, "/api/v1/bonds/user?current_owner_id=580b87da-e389-4290-acbf-f6191467f401&limit=15&page=-7", http.NoBody),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				getter := logic.NewUserBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsPerUserHandler(getter), nil
 			},
@@ -80,7 +86,8 @@ func Test_GetBondsPerUserHandler(t *testing.T) {
 			request: httptest.NewRequest(http.MethodGet, "/api/v1/bonds/user?current_owner_id=580b87da-e389-4290-acbf-f6191467f401&limit=25&page=0", http.NoBody),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				getter := logic.NewUserBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsPerUserHandler(getter), nil
 			},
@@ -90,7 +97,8 @@ func Test_GetBondsPerUserHandler(t *testing.T) {
 			request: httptest.NewRequest(http.MethodGet, "/api/v1/bonds/user?current_owner_id=580b87da-e389-4290-acbf-f6191467f401&limit=15&page=4", http.NoBody),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				getter := logic.NewUserBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsPerUserHandler(getter), nil
 			},
@@ -149,7 +157,8 @@ func Test_GetBondsHandler(t *testing.T) {
 				// save in memory a new Bond
 				_ = memo.Save(context.Background(), bond)
 
-				getter := logic.NewBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsHandler(getter), nil
 			},
@@ -159,7 +168,8 @@ func Test_GetBondsHandler(t *testing.T) {
 			request: httptest.NewRequest(http.MethodGet, "/api/v1/bonds/all?current_owner_id=580b87da-e389-4290&limit=10&page=1", http.NoBody),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				getter := logic.NewBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsHandler(getter), nil
 			},
@@ -169,7 +179,8 @@ func Test_GetBondsHandler(t *testing.T) {
 			request: httptest.NewRequest(http.MethodGet, "/api/v1/bonds/all?current_owner_id=580b87da-e389-4290-acbf-f6191467f401&limit=-1&page=1", http.NoBody),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				getter := logic.NewBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsHandler(getter), nil
 			},
@@ -179,7 +190,8 @@ func Test_GetBondsHandler(t *testing.T) {
 			request: httptest.NewRequest(http.MethodGet, "/api/v1/bonds/all?current_owner_id=580b87da-e389-4290-acbf-f6191467f401&limit=15&page=-7", http.NoBody),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				getter := logic.NewBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsHandler(getter), nil
 			},
@@ -189,7 +201,8 @@ func Test_GetBondsHandler(t *testing.T) {
 			request: httptest.NewRequest(http.MethodGet, "/api/v1/bonds/all?current_owner_id=580b87da-e389-4290-acbf-f6191467f401&limit=25&page=0", http.NoBody),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				getter := logic.NewBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsHandler(getter), nil
 			},
@@ -199,7 +212,8 @@ func Test_GetBondsHandler(t *testing.T) {
 			request: httptest.NewRequest(http.MethodGet, "/api/v1/bonds/all?current_owner_id=580b87da-e389-4290-acbf-f6191467f401&limit=15&page=4", http.NoBody),
 			handlerFunc: func() (response.HttpHandlerFunc, error) {
 				memo := memory.NewBondMemory()
-				getter := logic.NewBondsRetriever(&memo)
+				bxico := banxico.NewBanxicoSearcher(os.Getenv("BMX_TOKEN"), os.Getenv("BMX_API_URL"))
+				getter := logic.NewUserBondsRetriever(&memo, bxico)
 
 				return GetBondsHandler(getter), nil
 			},

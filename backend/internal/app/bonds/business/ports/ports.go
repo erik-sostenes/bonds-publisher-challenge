@@ -24,6 +24,10 @@ type (
 	BondsGetter interface {
 		Get(context.Context, *domain.BondCurrentOwnerId, *filter.Filter) (domain.Bonds, error)
 	}
+
+	BanxicoSearcher interface {
+		Search(context.Context) (*domain.Banxico, error)
+	}
 )
 
 type (
@@ -37,10 +41,10 @@ type (
 	}
 
 	UserBondsRetriever interface {
-		Retrieve(context.Context, *domain.BondCurrentOwnerId, *filter.Filter) (domain.Bonds, error)
+		Retrieve(context.Context, *domain.BondCurrentOwnerId, *filter.Filter) (domain.Bonds, *domain.Banxico, error)
 	}
 
 	BondsRetriever interface {
-		Retrieve(context.Context, *domain.BondCurrentOwnerId, *filter.Filter) (domain.Bonds, error)
+		Retrieve(context.Context, *domain.BondCurrentOwnerId, *filter.Filter) (domain.Bonds, *domain.Banxico, error)
 	}
 )

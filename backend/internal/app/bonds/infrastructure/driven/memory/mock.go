@@ -15,7 +15,7 @@ type bondMemory struct {
 
 func NewBondMemory() bondMemory {
 	return bondMemory{
-		set: set.Set[string, *domain.Bond]{},
+		set: set.New[string, *domain.Bond](),
 	}
 }
 

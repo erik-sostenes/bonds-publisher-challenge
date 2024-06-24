@@ -9,7 +9,6 @@ import (
 	"github.com/erik-sostenes/bonds-publisher-challenge/cmd/bootstrap/db"
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/business/domain"
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/business/ports"
-	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/bonds/infrastructure/drives/handlers"
 	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/filter"
 )
 
@@ -40,7 +39,7 @@ func Test_UserBondsGetter(t *testing.T) {
 
 				saver := NewBondSaver(conn)
 
-				bondRequest := handlers.BondRequest{
+				bondRequest := BondSchema{
 					ID:             "1424e770-7aae-4a22-a743-7317b914082d",
 					Name:           "Global Secure Corporate Bond 2024",
 					QuantitySale:   1,
@@ -78,7 +77,7 @@ func Test_UserBondsGetter(t *testing.T) {
 
 				saver := NewBondSaver(conn)
 
-				bondRequest := handlers.BondRequest{
+				bondRequest := BondSchema{
 					ID:             "1424e770-7aae-4a22-a743-7317b914082d",
 					Name:           "Global Secure Corporate Bond 2024",
 					QuantitySale:   1,
@@ -172,8 +171,12 @@ func Test_UserBondsGetter(t *testing.T) {
 				if !errors.Is(asBond, tsc.expectedError) {
 					t.Errorf("'%v' error was expected, but '%s' error was obtained", tsc.expectedError, asBond)
 				}
-			} else if err != nil {
+				t.SkipNow()
+			}
+
+			if err != nil {
 				t.Errorf("'%v' error was expected, but '%s' error was obtained", tsc.expectedError, asBond)
+				t.SkipNow()
 			}
 
 			if len(bonds) != tsc.numberBondsExpected {
@@ -210,7 +213,7 @@ func Test_BondsGetter(t *testing.T) {
 
 				saver := NewBondSaver(conn)
 
-				bondRequest := handlers.BondRequest{
+				bondRequest := BondSchema{
 					ID:             "1424e770-7aae-4a22-a743-7317b914082d",
 					Name:           "Global Secure Corporate Bond 2024",
 					QuantitySale:   1,
@@ -256,7 +259,7 @@ func Test_BondsGetter(t *testing.T) {
 
 				saver := NewBondSaver(conn)
 
-				bondRequest := handlers.BondRequest{
+				bondRequest := BondSchema{
 					ID:             "1424e770-7aae-4a22-a743-7317b914082d",
 					Name:           "Global Secure Corporate Bond 2024",
 					QuantitySale:   1,
@@ -358,8 +361,12 @@ func Test_BondsGetter(t *testing.T) {
 				if !errors.Is(asBond, tsc.expectedError) {
 					t.Errorf("'%v' error was expected, but '%s' error was obtained", tsc.expectedError, asBond)
 				}
-			} else if err != nil {
+				t.SkipNow()
+			}
+
+			if err != nil {
 				t.Errorf("'%v' error was expected, but '%s' error was obtained", tsc.expectedError, asBond)
+				t.SkipNow()
 			}
 
 			if len(bonds) != tsc.numberBondsExpected {

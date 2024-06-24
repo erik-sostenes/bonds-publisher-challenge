@@ -3,8 +3,8 @@ package set
 // Set is a generic data structure that simulates a set using a map
 type Set[I comparable, V any] map[I]V
 
-// NewSet creates and returns a new instance of Set
-func NewSet[I comparable, V any]() Set[I, V] {
+// New creates and returns a new instance of Set
+func New[I comparable, V any]() Set[I, V] {
 	return make(map[I]V)
 }
 

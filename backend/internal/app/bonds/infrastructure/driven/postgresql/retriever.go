@@ -62,7 +62,7 @@ func (b *userBondsGetter) Get(ctx context.Context, bcOwnerId *domain.BondCurrent
 		bondsSchema = append(bondsSchema, &bondSchema)
 	}
 
-	return bondsSchema.toBusiness()
+	return bondsSchema.ToBusiness()
 }
 
 type bondsGetter struct {
@@ -116,5 +116,5 @@ func (b *bondsGetter) Get(ctx context.Context, bcOwnerId *domain.BondCurrentOwne
 		bondsSchema = append(bondsSchema, &bondSchema)
 	}
 
-	return bondsSchema.toBusiness()
+	return bondsSchema.ToBusiness()
 }

@@ -18,11 +18,11 @@ type (
 	BondsSchema []*BondSchema
 )
 
-func (b *BondsSchema) toBusiness() (domain.Bonds, error) {
+func (b *BondsSchema) ToBusiness() (domain.Bonds, error) {
 	bonds := make(domain.Bonds, 0, len(*b))
 
 	for _, bondSchema := range *b {
-		bond, err := bondSchema.toBusiness()
+		bond, err := bondSchema.ToBusiness()
 		if err != nil {
 			return nil, err
 		}
@@ -32,7 +32,7 @@ func (b *BondsSchema) toBusiness() (domain.Bonds, error) {
 	return bonds, nil
 }
 
-func (b *BondSchema) toBusiness() (*domain.Bond, error) {
+func (b *BondSchema) ToBusiness() (*domain.Bond, error) {
 	return domain.NewBond(
 		b.ID,
 		b.Name,
