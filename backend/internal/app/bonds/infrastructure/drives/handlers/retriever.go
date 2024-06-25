@@ -51,7 +51,7 @@ func GetBondsPerUserHandler(retriever ports.UserBondsRetriever) response.HttpHan
 
 		return response.JSON(w, http.StatusOK, response.Response{
 			Data:     toRequest(bonds),
-			Metadata: banxico.BanxicoRequest(*bxico).Bmx,
+			Metadata: banxico.ToRequest(bxico).Bmx,
 		})
 	}
 }
@@ -96,7 +96,7 @@ func GetBondsHandler(retriever ports.BondsRetriever) response.HttpHandlerFunc {
 
 		return response.JSON(w, http.StatusOK, response.Response{
 			Data:     toRequest(bonds),
-			Metadata: banxico.BanxicoRequest(*bxico).Bmx,
+			Metadata: banxico.ToRequest(bxico).Bmx,
 		})
 	}
 }

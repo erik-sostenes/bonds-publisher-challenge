@@ -45,16 +45,18 @@ func NewTokenGenerator(privateKeyBase64 string) ports.TokenGenerator {
 
 // Generate a new [Token] with the specified signing method and claims
 func (jwt tokenGenerator) Generate(user *domain.User, permissions uint8) (token string, err error) {
-	role := map[string]any{
-		"id":   user.Role().ID(),
-		"type": user.Role().Type(),
-	}
-
 	authorization := &domain.Authorization{
-		UserID:      user.ID(),
-		UserName:    user.Name(),
-		Role:        role,
-		Permissions: uint(permissions),
+		UserID:   user.ID(),
+		UserName: user.Name(),
+		Role: struct {
+			Id          uint8
+			RoleType    string
+			Permissions uint8
+		}{
+			Id:          user.Role().ID(),
+			RoleType:    user.Role().Type(),
+			Permissions: permissions,
+		},
 		RegisteredClaims: gojwt.RegisteredClaims{
 			ExpiresAt: gojwt.NewNumericDate(time.Now().Add(time.Minute * 15)),
 			Issuer:    "cicada",
@@ -108,10 +110,17 @@ func (jwt *tokenValidator) Validate(strToken string) (*domain.Authorization, err
 
 	if claims, ok := token.Claims.(gojwt.MapClaims); ok && token.Valid {
 		auth := &domain.Authorization{
-			UserID:      claims["UserID"].(string),
-			UserName:    claims["UserName"].(string),
-			Role:        claims["Role"].(map[string]interface{}),
-			Permissions: uint(claims["Permissions"].(float64)),
+			UserID:   claims["UserID"].(string),
+			UserName: claims["UserName"].(string),
+			Role: struct {
+				Id          uint8
+				RoleType    string
+				Permissions uint8
+			}{
+				Id:          uint8(claims["Role"].(map[string]any)["Id"].(float64)),
+				RoleType:    claims["Role"].(map[string]any)["RoleType"].(string),
+				Permissions: uint8(claims["Role"].(map[string]any)["Permissions"].(float64)),
+			},
 		}
 		return auth, nil
 	}

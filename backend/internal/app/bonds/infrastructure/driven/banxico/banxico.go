@@ -39,7 +39,7 @@ func (s *banxicoSearcher) Search(ctx context.Context) (*domain.Banxico, error) {
 		slog.ErrorContext(ctx, "banxico error", "msg", err.Error())
 		return nil, errors.New("an error occurred while obtaining the SF43718 series from Banxico")
 	}
-	request.Header.Set("Bmx-bmxToken", s.bmxToken)
+	request.Header.Set("Bmx-Token", s.bmxToken)
 
 	client := &http.Client{
 		Timeout: 10 * time.Second,

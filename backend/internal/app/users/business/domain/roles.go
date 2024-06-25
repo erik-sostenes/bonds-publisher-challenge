@@ -5,10 +5,10 @@ import (
 )
 
 // RoleUser represents a role of user type
-var RoleUser = Role{1, "USER"}
+var RoleUser = Role{roleID: 1, roleType: "USER", permissions: Create | Read | Update}
 
 // roles is a map representing a set of roles
-var roles = map[RoleType]Role{
+var Roles = map[RoleType]Role{
 	RoleUser.roleType: RoleUser,
 }
 
@@ -16,7 +16,7 @@ var roles = map[RoleType]Role{
 type RoleID uint8
 
 func (r RoleID) Validate() (*RoleID, error) {
-	for _, v := range roles {
+	for _, v := range Roles {
 		if v.roleID.ID() == uint8(r) {
 			return &r, nil
 		}
@@ -33,7 +33,7 @@ func (r RoleID) ID() uint8 {
 type RoleType string
 
 func (r RoleType) Validate() (*RoleType, error) {
-	role, exists := roles[r]
+	role, exists := Roles[r]
 
 	if !exists {
 		return &r, fmt.Errorf("%w: invalid role type '%v'", InvalidRoleType, r)
@@ -48,8 +48,9 @@ func (r RoleType) RoleType() string {
 
 // Role is a structure containing the values needed to define a role
 type Role struct {
-	roleID   RoleID
-	roleType RoleType
+	roleID      RoleID
+	roleType    RoleType
+	permissions Permission
 }
 
 func NewRole(roleID uint8, roleType string) (*Role, error) {
@@ -75,4 +76,8 @@ func (r Role) ID() uint8 {
 
 func (r Role) Type() string {
 	return r.roleType.RoleType()
+}
+
+func (r Role) Permissions() Permission {
+	return r.permissions
 }

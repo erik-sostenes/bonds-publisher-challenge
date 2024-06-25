@@ -52,3 +52,30 @@ func (b *BanxicoRequest) ToBusiness() *domain.Banxico {
 		},
 	}
 }
+
+func ToRequest(b *domain.Banxico) *BanxicoRequest {
+	series := make(Series, 0, len(b.Bmx.Series))
+
+	for _, serie := range b.Bmx.Series {
+		datos := make(Datos, 0, len(serie.Datos))
+
+		for _, dato := range serie.Datos {
+			datos = append(datos, &Dato{
+				Fecha: dato.Fecha,
+				Dato:  dato.Dato,
+			})
+		}
+
+		series = append(series, &Serie{
+			IdSerie: serie.IdSerie,
+			Titulo:  serie.Titulo,
+			Datos:   datos,
+		})
+	}
+
+	return &BanxicoRequest{
+		Bmx: Bmx{
+			Series: series,
+		},
+	}
+}

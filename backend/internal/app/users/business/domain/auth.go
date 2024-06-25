@@ -12,8 +12,11 @@ type (
 	Authorization struct {
 		UserID,
 		UserName string
-		Role        map[string]any
-		Permissions uint
+		Role struct {
+			Id          uint8
+			RoleType    string
+			Permissions uint8
+		}
 		RegisteredClaims
 	}
 )
