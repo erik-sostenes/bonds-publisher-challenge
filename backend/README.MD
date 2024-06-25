@@ -86,6 +86,12 @@ make keys
 export $(grep -v ^# .env.example)
 ```
 
+##### Migrate
+
+```bash
+make migrate
+```
+
 ##### Run it!
 
 ```bash

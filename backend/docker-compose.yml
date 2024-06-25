@@ -5,8 +5,7 @@ services:
     build: .
     environment:
       BMX_TOKEN: "${BMX_TOKEN}"
-      CERT_FILE: "${CERT_FILE}"
-      KEY_FILE: "${KEY_FILE}"
+      BMX_API_URL: "${BMX_API_URL}"
       PRIVATE_KEY: "${PRIVATE_KEY}"
       PUBLIC_KEY: "${PUBLIC_KEY}"
       PORT: 8000

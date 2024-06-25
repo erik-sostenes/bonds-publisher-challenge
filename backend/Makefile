@@ -10,5 +10,8 @@ test:
 build:
 	docker-compose up --build
 
+migrate:
+	bash ./scripts/migrate.bash
+
 run: server
 	./build

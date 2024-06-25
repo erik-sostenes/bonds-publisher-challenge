@@ -69,6 +69,10 @@ jobs:
       - name: Set BMX_TOKEN
         run: echo "BMX_TOKEN=${{ secrets.BMX_TOKEN }}" >> $GITHUB_ENV
 
+      # Set BMX_API_URL environment variable from secret
+      - name: Set BMX_API_URL
+        run: echo "BMX_API_URL=${{ secrets.BMX_API_URL }}" >> $GITHUB_ENV
+
       # Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL
         run: |
@@ -95,6 +99,7 @@ jobs:
           PRIVATE_KEY: ${{ env.PRIVATE_KEY }}
           PUBLIC_KEY: ${{ env.PUBLIC_KEY }}
           BMX_TOKEN: ${{ env.BMX_TOKEN }}
+          BMX_API_URL: ${{ env.BMX_API_URL }}
         run: go test -v ./...
         working-directory: ./backend
 
@@ -102,5 +107,6 @@ jobs:
       - name: Build
         env:
           BMX_TOKEN: ${{ env.BMX_TOKEN }}
+          BMX_API_URL: ${{ env.BMX_API_URL }}
         run: go build -v ./...
         working-directory: ./backend

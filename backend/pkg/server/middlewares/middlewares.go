@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/users/business/domain"
 	"github.com/erik-sostenes/bonds-publisher-challenge/internal/app/users/business/ports"
 	"github.com/erik-sostenes/bonds-publisher-challenge/pkg/server/response"
 	"golang.org/x/time/rate"
@@ -67,11 +68,25 @@ func IsAuthenticated(validator ports.TokenValidator, next http.HandlerFunc) http
 	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		strToken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-		_, err := validator.Validate(strToken)
-		// TODO: validate permissions
+		authorization, err := validator.Validate(strToken)
 		if err != nil {
 			_ = response.JSON(w, http.StatusForbidden, response.Response{
 				Message: err.Error(),
+			})
+			return
+		}
+
+		role, ok := domain.Roles[domain.RoleType(authorization.Role.RoleType)]
+		if !ok {
+			_ = response.JSON(w, http.StatusForbidden, response.Response{
+				Message: "invalid role",
+			})
+			return
+		}
+
+		if !role.Permissions().Contains(domain.Permission(authorization.Role.Permissions)) {
+			_ = response.JSON(w, http.StatusForbidden, response.Response{
+				Message: "invalid permissions",
 			})
 			return
 		}
